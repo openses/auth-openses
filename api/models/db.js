@@ -23,7 +23,7 @@ mongoose.connect(dbURI, {
 // CONNECTION EVENTS
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.on('connected', function() {
-  console.log('Mongoose connected to ' + dbURI);
+  console.log('Mongoose connected to mongodb');
 });
 mongoose.connection.once('open', function() {
     console.log(JSON.stringify("we're connected!"))
