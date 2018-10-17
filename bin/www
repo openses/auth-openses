@@ -13,14 +13,15 @@ const options = {
   key: fs.readFileSync('./bin/server.key'),
   cert: fs.readFileSync('./bin/server.crt'),
   // dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem')
-};
-
+  };
+  
 /**
  * Get port from environment and store in Express.
  */
 
-// var port = normalizePort(process.env.PORT || '3000');
-var port = normalizePort(process.env.PORT || '3443');
+var port = normalizePort(process.env.PORT || '443');
+// var port = normalizePort(process.env.PORT || '3443');
+// var port = normalizePort(process.env.PORT || '443');
 app.set('port', port);
 
 /**
