@@ -1,17 +1,24 @@
 var mongoose = require('mongoose');
 var gracefulShutdown;
 // https://www.npmjs.com/package/dotenv
-const db_host = process.env.DB_HOST;
+
+
+
 const dbuser = process.env.DB_USER;
 const dbpassword = process.env.DB_PASSWORD;
+const db_host = process.env.DB_HOST;
 
 const dbURI = "mongodb://" + dbuser + ":" + dbpassword + db_host;
+
 
 /* if (process.env.NODE_ENV === 'production') {
   dbURI = process.env.MONGOLAB_URI;
 } */
 
-mongoose.connect(dbURI, {useNewUrlParser: true });
+mongoose.connect(dbURI, {
+  useCreateIndex: true,
+  useNewUrlParser: true
+ });
 
 // CONNECTION EVENTS
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));

@@ -15,7 +15,10 @@ var cors = require('cors');
 // [SH] Require Passport
 var passport = require('passport');
 // https://www.npmjs.com/package/dotenv -> see ./api/models/db.js -> dbURI
-require('dotenv').config()
+var dotenv = require('dotenv').config('.env');
+if (dotenv.error) {
+    throw dotenv.error
+  };
 
 // [SH] Bring in the data model
 require('./api/models/db');
@@ -25,7 +28,6 @@ require('./api/config/passport');
 
 // [SH] Bring in the routes for the API (delete the default routes)
 var routesApi = require('./api/routes/index');
-console.log(routesApi);
 
 var app = express();
 
