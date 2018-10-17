@@ -26,7 +26,7 @@ mongoose.connection.on('connected', function() {
   console.log('Mongoose connected to ' + dbURI);
 });
 mongoose.connection.once('open', function() {
-    console.log(JSON.stringify("we're connected!" + " user: " + dbuser + " pw: " + dbpassword))
+    console.log(JSON.stringify("we're connected!"))
   });
   
   // mongoose.disconnect();
