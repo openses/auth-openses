@@ -2,3 +2,14 @@
 node_modules/
 server.key
 server.crt
+cert.pem
+chain.pem
+fullchain.pem
+privkey.pem
+.well-known/acme-challenge/a-string
+bin/chain.pem
+bin/.well-known/acme-challenge/a-string
+bin/cert1.pem
+bin/chain1.pem
+bin/fullchain1.pem
+bin/privkey1.pem
