@@ -28,12 +28,16 @@ require('./api/config/passport');
 
 // [SH] Bring in the routes for the API (delete the default routes)
 var routesApi = require('./api/routes/index');
+// var routesOIDC = require('./oidc/routes/index');
 
 var app = express();
 
+  
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -46,8 +50,14 @@ app.use(cors());
 // [SH] Initialise Passport before using the route middleware
 app.use(passport.initialize());
 
+// no stores configured, all in-memory (dev only)
+// oidc.initialize({ clients });
+
 // [SH] Use the API routes when path starts with /api
 app.use('/api', routesApi);
+// app.use('/oidc', routesOIDC);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -87,6 +97,13 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
+
+/* app.get('/rendertest', function (req, res) {
+    console.log('RenderTest');
+    res.render('index', { title: 'RenderTest'});
+  }); */
+
+// no stores configured, all in-memory (dev only)
 
 
 module.exports = app;
