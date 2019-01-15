@@ -11,11 +11,8 @@ const http = require('http');
 const https = require('https'), fs = require('fs') /* , helmet = require('helmet') */ ;
 
 const credentials = {
-  // key: fs.readFileSync('./bin/server.key'),
-  // cert: fs.readFileSync('./bin/server.crt'),
-  key: fs.readFileSync('./bin/privkey1.pem', 'utf8'),
-  cert: fs.readFileSync('./bin/fullchain1.pem', 'utf8'),
-  // ca: fs.readFileSync('./bin/chain1.pem', 'utf8')
+  key: fs.readFileSync('./bin/privkey.pem', 'utf8'),
+  cert: fs.readFileSync('./bin/fullchain.pem', 'utf8'),
   };
   
 /**
