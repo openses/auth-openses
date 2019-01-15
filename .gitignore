@@ -13,3 +13,5 @@ bin/cert1.pem
 bin/chain1.pem
 bin/fullchain1.pem
 bin/privkey1.pem
+.well-known/acme-challenge/
+bin/.well-known/acme-challenge/
