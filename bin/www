@@ -6,6 +6,9 @@
 
 const app = require('../app');
 const oidcApp = require('../oidcApp');
+// const clientApp = require('../client');
+const authorizationServerApp = require('../authorizationServer');
+const protectedResourceApp = require('../protectedResource');
 const debug = require('debug')('auth-openses:server');
 const http = require('http');
 const https = require('https'), fs = require('fs') /* , helmet = require('helmet') */ ;
@@ -14,6 +17,8 @@ const credentials = {
   key: fs.readFileSync('./bin/privkey.pem', 'utf8'),
   cert: fs.readFileSync('./bin/fullchain.pem', 'utf8'),
   };
+
+
   
 /**
  * Create HTTP server.
@@ -21,6 +26,9 @@ const credentials = {
 
 const httpServer = http.createServer(app);
 const oidcHttpServer = http.createServer(oidcApp);
+// const clientHttpServer = http.createServer(clientApp);
+const authorizationServerHttpServer = http.createServer(authorizationServerApp);
+const protectedResourceHttpServer = http.createServer(protectedResourceApp);
 const httpsServer = https.createServer(credentials, app);
 
 /**
@@ -32,6 +40,18 @@ httpServer.listen(80, () => {
 
 oidcHttpServer.listen(3000, () => {
 	console.log('oidc HTTP Server running on port 3000');
+});
+
+/* clientHttpServer.listen(9000, () => {
+	console.log('client Http Server running on port 9000');
+}); */
+
+authorizationServerHttpServer.listen(9001, () => {
+	console.log('oauthorizationServer Http Server running on port 9001');
+});
+
+protectedResourceHttpServer.listen(9002, () => {
+	console.log('protectedResourceHttpServer Http Server running on port 9002');
 });
 
 // server.listen(443);

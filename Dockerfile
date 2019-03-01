@@ -11,7 +11,12 @@ RUN npm install
 # Copy source
 COPY . /usr/src/app
 
+RUN ["chmod", "+x", "/usr/src/app/my_wrapper_script.sh"]
+
 EXPOSE 80
 EXPOSE 443
 EXPOSE 3000
-CMD [ "npm", "start" ]
+EXPOSE 9000
+EXPOSE 9001
+EXPOSE 9002
+CMD ./my_wrapper_script.sh

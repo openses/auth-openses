@@ -1,6 +1,12 @@
 const express = require('express');
 const Provider = require('oidc-provider');
 
+var serverURL;
+
+// in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
+// serverURL = 'localhost';
+serverURL = 'auth-openses.westeurope.azurecontainer.io';
+
 const oidcApp = express();
 
 const clients = [
@@ -71,8 +77,7 @@ const clients = [
     response_types: [],
 }];
 
-// const oidc = new Provider('http://auth-openses.westeurope.azurecontainer.io:3000', {
-const oidc = new Provider('http://localhost:3000', {
+const oidc = new Provider('http://' + serverURL +':3000', {
     claims: {
         address: ['address'],
         email: ['email', 'email_verified'],
