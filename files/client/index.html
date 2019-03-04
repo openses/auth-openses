@@ -29,10 +29,10 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <a target="_blank" class="navbar-brand" href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</label></a>
-          <a class="navbar-brand" href="/"><span class="label label-primary">Client</label></a>
-          <a target="_blank" class="navbar-brand" href="http://oauth.eidlab.ch"><span class="label label-danger">Authorization</label></a>
-          <a target="_blank" class="navbar-brand" href="http://resource.eidlab.ch"><span class="label label-success">Resources</label></a>
+          <a target="_blank" class="navbar-brand" href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a>
+          <a class="navbar-brand" href="/"><span class="label label-primary">Client</span></a>
+          <a target="_blank" class="navbar-brand" href="http://oauth.eidlab.ch"><span class="label label-danger">Authorization</span></a>
+          <a target="_blank" class="navbar-brand" href="http://resource.eidlab.ch"><span class="label label-success">Resources</span></a>
         </div>
       </div>
     </nav>
@@ -40,11 +40,22 @@
     <div class="container">
 
       <div class="jumbotron">
+      <p>This page represents the  <span class="label label-primary">client</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> laboratory:</p>
+      <br>
+      <p>Code: <span class="label label-danger"><%= render_code ? render_code : 'NONE' %></span></p>
       <p>Access token value: <span class="label label-danger"><%- access_token ? access_token : 'NONE' %></span></p>
-		  <p>Scope value: <span class="label label-danger"><%- scope ? scope : 'NONE' %></span></p>
-		  <p>Refresh token value: <span class="label label-danger"><%- refresh_token ? refresh_token : 'NONE' %></span></p>
-		  <a class="btn btn-default" href="/authorize">Get OAuth Token</a> 
-		  <a class="btn btn-default" href="/fetch_resource">Get Protected Resource</a> 
+		  <p>Scope value: <span class="label label-warning"><%- scope ? scope : 'NONE' %></span></p>
+      <p>Refresh token value: <span class="label label-danger"><%- refresh_token ? refresh_token : 'NONE' %></span></p>
+      <p>JSON Web Token (JWT ID Token): <span class="label label-danger"><%- id_token ? id_token : 'NONE' %></span></p>
+      <p>Logged in user subject: <span class="label label-warning"><%- sub ? sub : 'NONE' %></span> from issuer: <span class="label label-warning"><%- iss ? iss : 'NONE' %></span></p>
+      User information:
+      <p>sub: <span class="label label-danger"><%- sub ? sub : 'NONE' %></span></p>
+      <p>name: <span class="label label-danger"><%- name ? name : 'NONE' %></span></p>
+      <p>preferred_username: <span class="label label-danger"><%- preferred_username ? preferred_username : 'NONE' %></span></p>
+      <p>email: <span class="label label-danger"><%- email ? email : 'NONE' %></span></p>
+      <p>email_verified: <span class="label label-danger"><%- email_verified ? email_verified : 'NONE' %></span></p>
+      <a class="btn btn-default" href="/authorize">Get OAuth Token</a> 
+      <a class="btn btn-default" href="/fetch_resource">Get Protected Resource</a> 
       </div>
 
     </div><!-- /.container -->

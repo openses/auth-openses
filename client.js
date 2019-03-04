@@ -39,12 +39,21 @@ var client = {
 	"scope": "openid profile email phone address"
 };
 
+outputClient = outputClient + "client_id: " + "oauth-client-1" + "<br>";;
+outputClient = outputClient + "client_secret: " + "oauth-client-secret-1" + "<br>";
+outputClient = outputClient + "\ redirect_uris: " + "http://" + serverURL + ":9000/callback" + "<br>";
+outputClient = outputClient + "client_id: " + "openid profile email phone address" + "<br>";
+
 // authorization server information
 var authServer = {
 	authorizationEndpoint: 'http://' + serverURL + ':9001/authorize',
 	tokenEndpoint: 'http://' + serverURL + ':9001/token',
 	userInfoEndpoint: 'http://' + serverURL + ':9002/userinfo'
 };
+
+outputClient = outputClient + "authorizationEndpoint: " + authServer.authorizationEndpoint + "<br>";
+outputClient = outputClient + "tokenEndpoint: " + "http://" + authServer.tokenEndpoint + "<br>";
+outputClient = outputClient + "userInfoEndpoint: " + "http://" + authServer.userInfoEndpoint + "<br>";
 
 var rsaKey = {
   "alg": "RS256",
@@ -57,15 +66,24 @@ var rsaKey = {
 var protectedResource = 'http://' + serverURL + ':9002/resource';
 
 var state = null;
-
+var render_code = null;
 var access_token = null;
 var refresh_token = null;
 var scope = null;
 var id_token = null;
 var userInfo = null;
+var sub = null;
+var iss = null;
+var body_id_token = null;
+var name = null;
+var preferred_username = null;
+var email = null;
+var email_verified = null;
+
+
 
 clientApp.get('/', function (req, res) {
-	res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
+	res.render('index', {render_code: render_code, access_token: access_token, refresh_token: refresh_token, scope: scope, id_token: body_id_token, sub: sub, iss: iss, name: name, preferred_username: preferred_username, email: email, email_verified: email_verified});
 });
 
 clientApp.get('/authorize', function(req, res){
@@ -85,9 +103,7 @@ clientApp.get('/authorize', function(req, res){
 	
 	console.log("redirect", authorizeUrl);
 	// outputClient = "Test";
-	outputClient = outputClient + "redirect: " + authorizeUrl + "\n" + "\n";
-	// outputClient = outputClient + "Test0" + "\n";
-	console.log("outputClient", outputClient);
+	outputClient = outputClient + "redirect: " + authorizeUrl + "<br>";
 	res.redirect(authorizeUrl);
 });
 
@@ -102,13 +118,18 @@ clientApp.get("/callback", function(req, res){
 	var resState = req.query.state;
 	if (resState == state) {
 		console.log('State value matches: expected %s got %s', state, resState);
+		outputClient = outputClient + "State value matches: expected %s got %s: " + state + " " + resState + "<br>";
 	} else {
 		console.log('State DOES NOT MATCH: expected %s got %s', state, resState);
+		outputClient = outputClient + "St'State DOES NOT MATCH: expected %s got %s: " + state + " " + resState + "<br>";
 		res.render('error', {error: 'State value did not match'});
+		outputClient = outputClient + "error: " + "State value did not match" + "<br>";
 		return;
 	}
 
 	var code = req.query.code;
+	render_code = code;
+	
 
 	var form_data = qs.stringify({
 				grant_type: 'authorization_code',
@@ -128,27 +149,31 @@ clientApp.get("/callback", function(req, res){
 	);
 
 	console.log('Requesting access token for code %s',code);
-	outputClient = outputClient + "code: " + code + "\n" + " " + "\n"  + " " +  "\n";
+	outputClient = outputClient + "code: " + code  + "<br>";
 	
 	if (tokRes.statusCode >= 200 && tokRes.statusCode < 300) {
 		var body = JSON.parse(tokRes.getBody());
 	
 		access_token = body.access_token;
 		console.log('Got access token: %s', access_token);
+		outputClient = outputClient + "access token: %s" + access_token  + "<br>";
 		if (body.refresh_token) {
 			refresh_token = body.refresh_token;
 			console.log('Got refresh token: %s', refresh_token);
+			outputClient = outputClient + "refresh token: %s" + refresh_token  + "<br>";
 		}
 		
 		scope = body.scope;
 		console.log('Got scope: %s', scope);
+		outputClient = outputClient + "scope: %s" + scope  + "<br>";
 
 		if (body.id_token) {
 			userInfo = null;
 			id_token = null;
 
 			console.log('Got ID token: %s', body.id_token);
-	
+			outputClient = outputClient + "ID token: %s" + body.id_token  + "<br>";
+			body_id_token = body.id_token;
 			// check the id token
 			var pubKey = jose.KEYUTIL.getKey(rsaKey);
 			var tokenParts = body.id_token.split('.');
@@ -179,6 +204,12 @@ clientApp.get("/callback", function(req, res){
 					}
 				}
 			}
+			sub = payload.sub;
+			iss = payload.iss;
+			name = payload.name;
+			preferred_username = payload.preferred_username;
+			email = payload.email;
+			email_verified = payload.email_verified;
 			res.render('userinfo', {userInfo: userInfo, id_token: id_token});
 			return;
 		}
@@ -247,9 +278,6 @@ clientApp.get('/userinfo', function(req, res) {
 });
 
 clientApp.use('/', express.static('files/client'));
-// clientApp.use('/test', express.static('files/client'));
-
-
 
 var buildUrl = function(base, options, hash) {
 	var newUrl = url.parse(base, true);
@@ -264,7 +292,7 @@ var buildUrl = function(base, options, hash) {
 		newUrl.hash = hash;
 	}
 	
-	return url.format(newUrl);
+	return url.format(newUrl);s
 };
 
 var encodeClientCredentials = function(clientId, clientSecret) {
@@ -275,8 +303,6 @@ function clearOutputClient(){
 	outputClient = "";
 
 }
-
-// clientApp.get('/outputClient', express.static('files/client/outputClient'));
 
 clientApp.get('/outputClient', function(req, res,) {
 	res.render('outputClient', {outputClient: outputClient});
@@ -296,4 +322,4 @@ clientHttpServer.listen(9000, () => {
 });  */
 
 
-// module.exports = clientApp;
+// module.exports = clientApp;s
