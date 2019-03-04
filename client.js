@@ -11,11 +11,13 @@ var base64url = require('base64url');
 var __ = require('underscore');
 __.string = require('underscore.string');
 const http = require('http');
+var outputClient = "";
 
 var serverURL;
 
-// serverURL = 'localhost';
-serverURL = 'auth-openses.westeurope.azurecontainer.io';
+// in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
+serverURL = 'localhost';
+// serverURL = 'auth-openses.westeurope.azurecontainer.io';
 
 
 
@@ -82,6 +84,10 @@ clientApp.get('/authorize', function(req, res){
 	});
 	
 	console.log("redirect", authorizeUrl);
+	// outputClient = "Test";
+	outputClient = outputClient + "redirect: " + authorizeUrl + "\n" + "\n";
+	// outputClient = outputClient + "Test0" + "\n";
+	console.log("outputClient", outputClient);
 	res.redirect(authorizeUrl);
 });
 
@@ -122,6 +128,7 @@ clientApp.get("/callback", function(req, res){
 	);
 
 	console.log('Requesting access token for code %s',code);
+	outputClient = outputClient + "code: " + code + "\n" + " " + "\n"  + " " +  "\n";
 	
 	if (tokRes.statusCode >= 200 && tokRes.statusCode < 300) {
 		var body = JSON.parse(tokRes.getBody());
@@ -240,6 +247,9 @@ clientApp.get('/userinfo', function(req, res) {
 });
 
 clientApp.use('/', express.static('files/client'));
+// clientApp.use('/test', express.static('files/client'));
+
+
 
 var buildUrl = function(base, options, hash) {
 	var newUrl = url.parse(base, true);
@@ -260,6 +270,18 @@ var buildUrl = function(base, options, hash) {
 var encodeClientCredentials = function(clientId, clientSecret) {
 	return new Buffer(querystring.escape(clientId) + ':' + querystring.escape(clientSecret)).toString('base64');
 };
+
+function clearOutputClient(){
+	outputClient = "";
+
+}
+
+// clientApp.get('/outputClient', express.static('files/client/outputClient'));
+
+clientApp.get('/outputClient', function(req, res,) {
+	res.render('outputClient', {outputClient: outputClient});
+	return;	
+});
 
 const clientHttpServer = http.createServer(clientApp);
 

@@ -4,8 +4,8 @@ const Provider = require('oidc-provider');
 var serverURL;
 
 // in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
-// serverURL = 'localhost';
-serverURL = 'auth-openses.westeurope.azurecontainer.io';
+serverURL = 'localhost';
+// serverURL = 'auth-openses.westeurope.azurecontainer.io';
 
 const oidcApp = express();
 

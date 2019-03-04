@@ -13,8 +13,9 @@ var jose = require('jsrsasign');
 
 var serverURL;
 
-// serverURL = 'localhost';
-serverURL = 'auth-openses.westeurope.azurecontainer.io';
+// in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
+serverURL = 'localhost';
+// serverURL = 'auth-openses.westeurope.azurecontainer.io';
 
 var authorizationServerApp = express();
 
@@ -247,7 +248,7 @@ authorizationServerApp.post("/token", function(req, res){
 					var header = { 'typ': 'JWT', 'alg': rsaKey.alg, 'kid': rsaKey.kid };
 
 					var ipayload = {
-						iss: 'http://localhost:9001/',
+						iss: 'http://' + serverURL + ':9001/',
 						sub: code.user.sub,
 						aud: client.client_id,
 						iat: Math.floor(Date.now() / 1000),

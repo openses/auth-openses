@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>OAuth in Action: OAuth Client</title>
+    <title>OAuth in Action: OAuth outputClient</title>
 
     <!-- Bootstrap -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -29,10 +29,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <a target="_blank" class="navbar-brand" href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</label></a>
-          <a class="navbar-brand" href="/"><span class="label label-primary">Client</label></a>
-          <a target="_blank" class="navbar-brand" href="http://oauth.eidlab.ch"><span class="label label-danger">Authorization</label></a>
-          <a target="_blank" class="navbar-brand" href="http://resource.eidlab.ch"><span class="label label-success">Resources</label></a>
+          <a class="navbar-brand" href="/">OAuth in Action: <span class="label label-primary">OAuth outputClient</label></a>
         </div>
       </div>
     </nav>
@@ -40,11 +37,9 @@
     <div class="container">
 
       <div class="jumbotron">
-      <p>Access token value: <span class="label label-danger"><%- access_token ? access_token : 'NONE' %></span></p>
-		  <p>Scope value: <span class="label label-danger"><%- scope ? scope : 'NONE' %></span></p>
-		  <p>Refresh token value: <span class="label label-danger"><%- refresh_token ? refresh_token : 'NONE' %></span></p>
-		  <a class="btn btn-default" href="/authorize">Get OAuth Token</a> 
-		  <a class="btn btn-default" href="/fetch_resource">Get Protected Resource</a> 
+          Test outputClient<br>
+		  <p>outputClient: <%- outputClient ? outputClient : 'NONE' %></p>
+		  <a class="btn btn-default" href="/">OAuth Client</a> 
       </div>
 
     </div><!-- /.container -->
