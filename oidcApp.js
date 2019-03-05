@@ -6,8 +6,8 @@ var serverURL;
 // in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
 // client/index.html -> Zeile 85 
 // authorizationServer/error.html -> Zeile 32
-serverURL = 'localhost';
-// serverURL = 'auth-openses.westeurope.azurecontainer.io';
+// serverURL = 'localhost';
+serverURL = 'auth-openses.westeurope.azurecontainer.io';
 
 const oidcApp = express();
 

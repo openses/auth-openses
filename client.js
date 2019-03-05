@@ -1,4 +1,5 @@
 var express = require("express");
+var session = require('express-session');
 var bodyParser = require('body-parser');
 var request = require("sync-request");
 var url = require("url");
@@ -18,12 +19,15 @@ var serverURL;
 // in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
 // client/index.html -> Zeile 85 
 // authorizationServer/error.html -> Zeile 32
-serverURL = 'localhost';
-// serverURL = 'auth-openses.westeurope.azurecontainer.io';
+// serverURL = 'localhost';
+serverURL = 'auth-openses.westeurope.azurecontainer.io';
 
 
 
 var clientApp = express();
+
+clientApp.use(session({secret: "xcerats24srw"}));
+
 
 clientApp.use(bodyParser.json());
 clientApp.use(bodyParser.urlencoded({ extended: true }));
@@ -68,32 +72,29 @@ var rsaKey = {
 var protectedResource = 'http://' + serverURL + ':9002/resource';
 
 var state = null;
-var render_code = null;
-var access_token = null;
-var refresh_token = null;
-var scope = null;
-var id_token = null;
-var userInfo = null;
-var sub = null;
-var iss = null;
-var body_id_token = null;
-/* var name = null;
-var preferred_username = null;
-var email = null;
-var email_verified = null; */
-var protectedResourceVar = null;
+// var render_code = null;
+// var access_token = null;
+// var refresh_token = null;
+// var scope = null;
+// var id_token = null;
+// var userInfo = null;
+// var sub = null;
+// var iss = null;
+// var body_id_token = null;
+// var protectedResourceVar = null;
 
 
 
-clientApp.get('/', function (req, res) {
-	res.render('index', {render_code: render_code, access_token: access_token, refresh_token: refresh_token, scope: scope, id_token: body_id_token, sub: sub, iss: iss, userInfo: userInfo, resource: protectedResourceVar });
+clientApp.get('/', function (req, res, next) {
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar });
 });
 
 clientApp.get('/authorize', function(req, res){
 
-	access_token = null;
-	refresh_token = null;
-	scope = null;
+	var access_token = null;
+	req.session.access_token = access_token;
+	var refresh_token = null;
+	var scope = null;
 	state = randomstring.generate();
 	
 	var authorizeUrl = buildUrl(authServer.authorizationEndpoint, {
@@ -103,6 +104,8 @@ clientApp.get('/authorize', function(req, res){
 		redirect_uri: client.redirect_uris[0],
 		state: state
 	});
+
+	req.session.scope = scope;
 	
 	console.log("redirect", authorizeUrl);
 	// outputClient = "Test";
@@ -114,15 +117,16 @@ clientApp.get("/callback", function(req, res){
 
 	if (req.query.error) {
 		// it's an error response, act accordingly
-		access_token = null;
-		scope = null;
+		var access_token = null;
+		var refresh_token = null;
+		var scope = null;
 		render_code = null;
-		// access_token: access_token, refresh_token: refresh_token, scope: scope;
-		body_id_token = null;
-		sub = null;
-		iss = null;
-		userInfo = null;
-		protectedResourceVar = null;
+		var body_id_token = null;
+		var id_token = null;
+		var sub = null;
+		var iss = null;
+		var userInfo = null;
+		var protectedResourceVar = null;
 		res.render('error', {error: req.query.error});
 		return;
 	}
@@ -140,7 +144,7 @@ clientApp.get("/callback", function(req, res){
 	}
 
 	var code = req.query.code;
-	render_code = code;
+	req.session.render_code = code;
 	
 
 	var form_data = qs.stringify({
@@ -167,15 +171,18 @@ clientApp.get("/callback", function(req, res){
 		var body = JSON.parse(tokRes.getBody());
 	
 		access_token = body.access_token;
+		req.session.access_token = access_token;
 		console.log('Got access token: %s', access_token);
 		outputClient = outputClient + "access token: %s" + access_token  + "<br>";
 		if (body.refresh_token) {
 			refresh_token = body.refresh_token;
+			req.session.refresh_token = refresh_token;
 			console.log('Got refresh token: %s', refresh_token);
 			outputClient = outputClient + "refresh token: %s" + refresh_token  + "<br>";
 		}
 		
 		scope = body.scope;
+		req.session.scope = scope;
 		console.log('Got scope: %s', scope);
 		outputClient = outputClient + "scope: %s" + scope  + "<br>";
 
@@ -186,6 +193,7 @@ clientApp.get("/callback", function(req, res){
 			console.log('Got ID token: %s', body.id_token);
 			outputClient = outputClient + "ID token: %s" + body.id_token  + "<br>";
 			body_id_token = body.id_token;
+			req.session.body_id_token = body_id_token;
 			// check the id token
 			var pubKey = jose.KEYUTIL.getKey(rsaKey);
 			var tokenParts = body.id_token.split('.');
@@ -217,8 +225,11 @@ clientApp.get("/callback", function(req, res){
 					}
 				}
 			}
+			req.session.userInfo = userInfo;
 			sub = payload.sub;
+			req.session.sub = sub;
 			iss = payload.iss;
+			req.session.iss = iss;
 			
 			res.render('userinfo', {userInfo: userInfo, id_token: id_token});
 			return;
@@ -234,6 +245,8 @@ clientApp.get("/callback", function(req, res){
 });
 
 clientApp.get('/fetch_resource', function(req, res) {
+
+	var access_token = req.session.access_token;
 
 	if (!access_token) {
 		res.render('error', {error: 'Missing access token.'});
@@ -254,10 +267,12 @@ clientApp.get('/fetch_resource', function(req, res) {
 	if (resource.statusCode >= 200 && resource.statusCode < 300) {
 		var body = JSON.parse(resource.getBody());
 		protectedResourceVar = body;
+		req.session.protectedResourceVar = protectedResourceVar;
 		res.render('data', {resource: body});
 		return;
 	} else {
 		access_token = null;
+		req.session.access_token = access_token;
 		res.render('error', {error: 'Server returned response code: ' + resource.statusCode});
 		return;
 	}
@@ -266,6 +281,9 @@ clientApp.get('/fetch_resource', function(req, res) {
 
 clientApp.get('/userinfo', function(req, res) {
 	
+	var access_token = req.session.access_token;
+	var id_token = req.session.id_token
+
 	var headers = {
 		'Authorization': 'Bearer ' + access_token
 	};
@@ -279,6 +297,7 @@ clientApp.get('/userinfo', function(req, res) {
 		// protectedResource = resource;
 	
 		userInfo = body;
+		req.session.userInfo = userInfo;
 		
 	
 		res.render('userinfo', {userInfo: userInfo, id_token: id_token});
