@@ -155,12 +155,4 @@ var userInfoEndpoint = function(req, res) {
 protectedResourceApp.get('/userinfo', getAccessToken, requireAccessToken, userInfoEndpoint);
 protectedResourceApp.post('/userinfo', getAccessToken, requireAccessToken, userInfoEndpoint);
 
-
-/* var server = protectedResourceApp.listen(9002, 'localhost', function () {
-  var host = server.address().address;
-  var port = server.address().port;
-
-  console.log('OAuth Resource Server is listening at http://%s:%s', host, port);
-}); */
- 
 module.exports = protectedResourceApp;

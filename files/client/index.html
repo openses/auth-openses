@@ -43,19 +43,46 @@
       <p>This page represents the  <span class="label label-primary">client</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> laboratory:</p>
       <br>
       <p>Code: <span class="label label-danger"><%= render_code ? render_code : 'NONE' %></span></p>
-      <p>Access token value: <span class="label label-danger"><%- access_token ? access_token : 'NONE' %></span></p>
-		  <p>Scope value: <span class="label label-warning"><%- scope ? scope : 'NONE' %></span></p>
-      <p>Refresh token value: <span class="label label-danger"><%- refresh_token ? refresh_token : 'NONE' %></span></p>
-      <p>JSON Web Token (JWT ID Token): <span class="label label-danger"><%- id_token ? id_token : 'NONE' %></span></p>
-      <p>Logged in user subject: <span class="label label-warning"><%- sub ? sub : 'NONE' %></span> from issuer: <span class="label label-warning"><%- iss ? iss : 'NONE' %></span></p>
-      User information:
-      <p>sub: <span class="label label-danger"><%- sub ? sub : 'NONE' %></span></p>
-      <p>name: <span class="label label-danger"><%- name ? name : 'NONE' %></span></p>
-      <p>preferred_username: <span class="label label-danger"><%- preferred_username ? preferred_username : 'NONE' %></span></p>
-      <p>email: <span class="label label-danger"><%- email ? email : 'NONE' %></span></p>
-      <p>email_verified: <span class="label label-danger"><%- email_verified ? email_verified : 'NONE' %></span></p>
+      <p>Access Token: <span class="label label-danger"><%- access_token ? access_token : 'NONE' %></span></p>
+		  <p>Scope: <span class="label label-warning"><%- scope ? scope : 'NONE' %></span></p>
+      <p>Refresh Token: <span class="label label-danger"><%- refresh_token ? refresh_token : 'NONE' %></span></p>
+      <p>ID Token (JSON Web Token / JWT): 
+          <% if (id_token) { %> 
+            <pre>
+                <span class="label label-danger" style="font-size:12pt"><%- id_token %></span>
+            </pre>
+            <% } else { %>
+            <span class="label label-danger">NONE</span>
+          <% } %></p>
+      <p>Logged in User Subject: <span class="label label-warning"><%- sub ? sub : 'NONE' %></span> from Issuer: <span class="label label-warning"><%- iss ? iss : 'NONE' %></span></p>
+        <p>User Data from Identity Provider Resource:
+          <% if (userInfo) { %>
+            <ul>
+              <% _.each(userInfo, function(value, key, list) { %>
+              
+                <li><b><%- key %></b>: <%- value %></li>
+              
+              <% }); %>
+            </ul>
+            <% } else { %>
+            <span class="label label-danger">NONE</span>
+          <% } %>
+        </p>
+        <p>Data from Protected Resource:
+          <% if (resource) { %> 
+            <ul>
+              <%- JSON.stringify(resource, null, 4) %>
+            </ul>
+            <% } else { %>
+            <span class="label label-danger">NONE</span>
+          <% } %></p>
+        
+
       <a class="btn btn-default" href="/authorize">Get OAuth Token</a> 
-      <a class="btn btn-default" href="/fetch_resource">Get Protected Resource</a> 
+      <a class="btn btn-default" href="/userinfo">Get User Information</a>
+      <a class="btn btn-default" href="/fetch_resource">Get Protected Resource</a>
+      
+      <a class="btn btn-default" href="http://localhost:9000/callback?error=access_denied">Sign Out</a>
       </div>
 
     </div><!-- /.container -->

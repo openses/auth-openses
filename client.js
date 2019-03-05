@@ -16,6 +16,8 @@ var outputClient = "";
 var serverURL;
 
 // in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
+// client/index.html -> Zeile 85 
+// authorizationServer/error.html -> Zeile 32
 serverURL = 'localhost';
 // serverURL = 'auth-openses.westeurope.azurecontainer.io';
 
@@ -75,15 +77,16 @@ var userInfo = null;
 var sub = null;
 var iss = null;
 var body_id_token = null;
-var name = null;
+/* var name = null;
 var preferred_username = null;
 var email = null;
-var email_verified = null;
+var email_verified = null; */
+var protectedResourceVar = null;
 
 
 
 clientApp.get('/', function (req, res) {
-	res.render('index', {render_code: render_code, access_token: access_token, refresh_token: refresh_token, scope: scope, id_token: body_id_token, sub: sub, iss: iss, name: name, preferred_username: preferred_username, email: email, email_verified: email_verified});
+	res.render('index', {render_code: render_code, access_token: access_token, refresh_token: refresh_token, scope: scope, id_token: body_id_token, sub: sub, iss: iss, userInfo: userInfo, resource: protectedResourceVar });
 });
 
 clientApp.get('/authorize', function(req, res){
@@ -111,6 +114,15 @@ clientApp.get("/callback", function(req, res){
 
 	if (req.query.error) {
 		// it's an error response, act accordingly
+		access_token = null;
+		scope = null;
+		render_code = null;
+		// access_token: access_token, refresh_token: refresh_token, scope: scope;
+		body_id_token = null;
+		sub = null;
+		iss = null;
+		userInfo = null;
+		protectedResourceVar = null;
 		res.render('error', {error: req.query.error});
 		return;
 	}
@@ -198,6 +210,7 @@ clientApp.get("/callback", function(req, res){
 
 								// save just the payload, not the container (which has been validated)
 								id_token = payload;
+								
 				
 							}
 						}
@@ -206,10 +219,7 @@ clientApp.get("/callback", function(req, res){
 			}
 			sub = payload.sub;
 			iss = payload.iss;
-			name = payload.name;
-			preferred_username = payload.preferred_username;
-			email = payload.email;
-			email_verified = payload.email_verified;
+			
 			res.render('userinfo', {userInfo: userInfo, id_token: id_token});
 			return;
 		}
@@ -243,6 +253,7 @@ clientApp.get('/fetch_resource', function(req, res) {
 	
 	if (resource.statusCode >= 200 && resource.statusCode < 300) {
 		var body = JSON.parse(resource.getBody());
+		protectedResourceVar = body;
 		res.render('data', {resource: body});
 		return;
 	} else {
@@ -265,8 +276,10 @@ clientApp.get('/userinfo', function(req, res) {
 	if (resource.statusCode >= 200 && resource.statusCode < 300) {
 		var body = JSON.parse(resource.getBody());
 		console.log('Got data: ', body);
+		// protectedResource = resource;
 	
 		userInfo = body;
+		
 	
 		res.render('userinfo', {userInfo: userInfo, id_token: id_token});
 		return;
