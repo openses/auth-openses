@@ -41,7 +41,7 @@ var clients = [
 		"client_id": "oauth-client-1",
 		"client_secret": "oauth-client-secret-1",
 		"redirect_uris": ["http://" + serverURL + ":9000/callback"],
-		"scope": "openid profile email phone address"
+		"scope": "openid profile email phone address password salt hash"
 	}
 ];
 
@@ -62,7 +62,10 @@ var userInfo = {
 		"name": "Alice",
 		"profile": "student",
 		"email": "alice.student@example.com",
-		"email_verified": true
+		"email_verified": true,
+		"password": "Lp21:DIeuv", 
+		"salt": "salt1",
+		"hash": "084973670e2913b1500a30c7b7343a0b"
 	},
 	
 	"bob": {
@@ -71,7 +74,10 @@ var userInfo = {
 		"name": "Bob",
 		"profile": "teacher",
 		"email": "bob.teacher@example.net",
-		"email_verified": true
+		"email_verified": true,
+		"password": "Lp21:DIeuv",
+		"salt": "salt2",
+		"hash": "0da7baa58ec080fd0b67057f97f5e7f5"
 	},
 
 	"carol": {
@@ -80,7 +86,10 @@ var userInfo = {
 		"name": "Carol",
 		"profile": "school-administrator",
 		"email": "carol.school-administrator@example.net",
-		"email_verified": true
+		"email_verified": true,
+		"password": "Lp21:DIeuv",
+		"salt": "salt3",
+		"hash": "dffb8c1df66c57b67c6f8600d4337c65"
 	},
 
 	"dave": {
@@ -89,7 +98,10 @@ var userInfo = {
 		"name": "Dave",
 		"profile": "government-administrator",
 		"email": "dave.government-administrator@example.net",
-		"email_verified": true
+		"email_verified": true,
+		"password": "Lp21:DIeuv",
+		"salt": "salt4",
+		"hash": "4beb0e02dd728806d0e9482baa8462ed"
 	},
 
 	"mallory": {
@@ -98,7 +110,10 @@ var userInfo = {
 		"name": "Mallory",
 		"profile": "malicious attacker",
 		"email": "mallory.malicious-attacker.@example.net",
-		"email_verified": false
+		"email_verified": false,
+		"password": "Lp21:DIeuv",
+		"salt": "salt5",
+		"hash": "df5936712c7e37d7b79b2d8c7d506cd1"
 	}
 		
 };
@@ -106,6 +121,26 @@ var userInfo = {
 var getUser = function(username) {
 	return userInfo[username];
 };
+
+
+// https://www.npmjs.com/package/md5
+// https://hashgenerator.de/
+// https://de.wikipedia.org/wiki/Bcrypt
+// https://www.abeautifulsite.net/hashing-passwords-with-nodejs-and-bcrypt
+// https://www.npmjs.com/package/bcrypt
+var getHash = function(username) {
+	return userInfo[hash];
+};
+
+var getSalt = function(username) {
+	return userInfo[salt];
+};
+
+var getPassword = function(username) {
+	return userInfo[password];
+};
+
+
 
 var codes = {};
 
@@ -152,6 +187,7 @@ authorizationServerApp.get("/authorize", function(req, res){
 		
 		requests[reqid] = req.query;
 		
+		// res.render('approve_user_pw', {client: client, reqid: reqid, scope: rscope});
 		res.render('approve', {client: client, reqid: reqid, scope: rscope});
 		return;
 	}

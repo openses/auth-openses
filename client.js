@@ -42,7 +42,7 @@ var client = {
 	"client_id": "oauth-client-1",
 	"client_secret": "oauth-client-secret-1",
 	"redirect_uris": ["http://" + serverURL + ":9000/callback"],
-	"scope": "openid profile email phone address"
+	"scope": "openid profile email phone address password salt hash"
 };
 
 outputClient = outputClient + "client_id: " + "oauth-client-1" + "<br>";;
@@ -232,11 +232,13 @@ clientApp.get("/callback", function(req, res){
 			iss = payload.iss;
 			req.session.iss = iss;
 			
-			res.render('userinfo', {userInfo: userInfo, id_token: id_token});
+			// res.render('userinfo', {userInfo: userInfo, id_token: id_token});
+			res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile});
 			return;
 		}
 		
-		res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
+		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile});
 		return;
 
 	} else {
@@ -269,7 +271,8 @@ clientApp.get('/fetch_resource', function(req, res) {
 		var body = JSON.parse(resource.getBody());
 		protectedResourceVar = body;
 		req.session.protectedResourceVar = protectedResourceVar;
-		res.render('data', {resource: body});
+		// res.render('data', {resource: body});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile});
 		return;
 	} else {
 		access_token = null;
@@ -303,9 +306,11 @@ clientApp.get('/userinfo', function(req, res) {
 		req.session.userInfo = userInfo;
 		req.session.profile = body.profile;
 		console.log('profile: ', body.profile);
+		console.log('salt: ', body.salt);
 		
 	
-		res.render('userinfo', {userInfo:  userInfo, id_token: id_token});
+		// res.render('userinfo', {userInfo:  userInfo, id_token: id_token});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile});
 		return;
 	} else {
 		res.render('error', {error: 'Unable to fetch user information'});
