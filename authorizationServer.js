@@ -16,8 +16,8 @@ var serverURL;
 // in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
 // client/index.html -> Zeile 85 
 // authorizationServer/error.html -> Zeile 32
-// serverURL = 'localhost';
-serverURL = 'auth-openses.westeurope.azurecontainer.io';
+serverURL = 'localhost';
+// serverURL = 'auth-openses.westeurope.azurecontainer.io';
 
 var authorizationServerApp = express();
 
@@ -60,7 +60,8 @@ var userInfo = {
 		"sub": "9XE3-JI34-00132A",
 		"preferred_username": "alice",
 		"name": "Alice",
-		"email": "alice.wonderland@example.com",
+		"profile": "student",
+		"email": "alice.student@example.com",
 		"email_verified": true
 	},
 	
@@ -68,7 +69,35 @@ var userInfo = {
 		"sub": "1ZT5-OE63-57383B",
 		"preferred_username": "bob",
 		"name": "Bob",
-		"email": "bob.loblob@example.net",
+		"profile": "teacher",
+		"email": "bob.teacher@example.net",
+		"email_verified": true
+	},
+
+	"carol": {
+		"sub": "K95E-8UF1-7453C",
+		"preferred_username": "carol",
+		"name": "Carol",
+		"profile": "school-administrator",
+		"email": "carol.school-administrator@example.net",
+		"email_verified": true
+	},
+
+	"dave": {
+		"sub": "G6R2-G6E1-7352D",
+		"preferred_username": "dave",
+		"name": "Dave",
+		"profile": "government-administrator",
+		"email": "dave.government-administrator@example.net",
+		"email_verified": true
+	},
+
+	"mallory": {
+		"sub": "H6R3-J8Z5-5897M",
+		"preferred_username": "mallory",
+		"name": "Mallory",
+		"profile": "malicious attacker",
+		"email": "mallory.malicious-attacker.@example.net",
 		"email_verified": false
 	}
 		

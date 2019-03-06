@@ -19,8 +19,8 @@ var serverURL;
 // in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
 // client/index.html -> Zeile 85 
 // authorizationServer/error.html -> Zeile 32
-// serverURL = 'localhost';
-serverURL = 'auth-openses.westeurope.azurecontainer.io';
+serverURL = 'localhost';
+// serverURL = 'auth-openses.westeurope.azurecontainer.io';
 
 
 
@@ -86,7 +86,7 @@ var state = null;
 
 
 clientApp.get('/', function (req, res, next) {
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar });
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile});
 });
 
 clientApp.get('/authorize', function(req, res){
@@ -128,6 +128,7 @@ clientApp.get("/callback", function(req, res){
 		var userInfo = null;
 		var protectedResourceVar = null;
 		res.render('error', {error: req.query.error});
+		req.session.destroy();
 		return;
 	}
 	
@@ -283,6 +284,8 @@ clientApp.get('/userinfo', function(req, res) {
 	
 	var access_token = req.session.access_token;
 	var id_token = req.session.id_token
+	// var profile = null;
+	
 
 	var headers = {
 		'Authorization': 'Bearer ' + access_token
@@ -298,9 +301,11 @@ clientApp.get('/userinfo', function(req, res) {
 	
 		userInfo = body;
 		req.session.userInfo = userInfo;
+		req.session.profile = body.profile;
+		console.log('profile: ', body.profile);
 		
 	
-		res.render('userinfo', {userInfo: userInfo, id_token: id_token});
+		res.render('userinfo', {userInfo:  userInfo, id_token: id_token});
 		return;
 	} else {
 		res.render('error', {error: 'Unable to fetch user information'});

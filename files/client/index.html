@@ -67,9 +67,14 @@
             <% } else { %>
             <span class="label label-danger">NONE</span>
           <% } %>
+
+
+
         </p>
-        <p>Data from Protected Resource:
-          <% if (resource) { %> 
+        <p>Data from Protected Resource:<br>
+         Permission for profile <%- profile %>:<br>
+         Create: <% if (profile == 'government-administrator') {%> yes <% } else { %> no <% } %><br>
+            <% if (resource) { %> 
             <ul>
               <%- JSON.stringify(resource, null, 4) %>
             </ul>
@@ -82,7 +87,7 @@
       <a class="btn btn-default" href="/userinfo">Get User Information</a>
       <a class="btn btn-default" href="/fetch_resource">Get Protected Resource</a>
       
-      <a class="btn btn-default" href="http://auth-openses.westeurope.azurecontainer.io:9000/callback?error=access_denied">Sign Out</a>
+      <a class="btn btn-default" href="http://localhost:9000/callback?error=access_denied">Sign Out</a>
       </div>
 
     </div><!-- /.container -->
