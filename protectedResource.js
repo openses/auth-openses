@@ -145,6 +145,24 @@ var userInfoEndpoint = function(req, res) {
 					out[claim] = user[claim];
 				}
 			});
+		} else if (scope == 'permissiongroupe') {
+			__.each(['permissiongroupe'], function(claim) {
+				if (user[claim]) {
+					out[claim] = user[claim];
+				}
+			});
+		} else if (scope == 'credentials') {
+			__.each(['credentials'], function(claim) {
+				if (user[claim]) {
+					out[claim] = user[claim];
+				}
+			});
+		} else if (scope == 'permission') {
+			__.each(['permission'], function(claim) {
+				if (user[claim]) {
+					out[claim] = user[claim];
+				}
+			});
 		}
 	});
 	

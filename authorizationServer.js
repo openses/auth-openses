@@ -40,8 +40,9 @@ var clients = [
 	{
 		"client_id": "oauth-client-1",
 		"client_secret": "oauth-client-secret-1",
-		"redirect_uris": ["http://" + serverURL + ":9000/callback"],
-		"scope": "openid profile email phone address password salt hash"
+		// "redirect_uris": ["http://" + serverURL + ":9000/callback"],
+		"redirect_uris": ["http://" + serverURL + ":9000/callback_code"],
+		"scope": "openid profile email permission credentials "
 	}
 ];
 
@@ -60,60 +61,95 @@ var userInfo = {
 		"sub": "9XE3-JI34-00132A",
 		"preferred_username": "alice",
 		"name": "Alice",
-		"profile": "student",
+		"profile":  {
+			"favourite_colour": "blue",
+			"favourite_animal": "cat" 
+		},
 		"email": "alice.student@example.com",
 		"email_verified": true,
-		"password": "Lp21:DIeuv", 
-		"salt": "salt1",
-		"hash": "084973670e2913b1500a30c7b7343a0b"
+		"permission_groupe": "student",
+		"credentials":  {
+			"password": "Lp21:DIeuv", 
+			"salt": "salt1",
+			"hash": "084973670e2913b1500a30c7b7343a0b"
+		},
+		"permission": "student"
 	},
 	
 	"bob": {
 		"sub": "1ZT5-OE63-57383B",
 		"preferred_username": "bob",
 		"name": "Bob",
-		"profile": "teacher",
+		"profile":  {
+			"favourite_colour": "red",
+			"favourite_animal": "dog" 
+		},
 		"email": "bob.teacher@example.net",
 		"email_verified": true,
-		"password": "Lp21:DIeuv",
-		"salt": "salt2",
-		"hash": "0da7baa58ec080fd0b67057f97f5e7f5"
+		"permission_groupe": "teacher",
+		"credentials":  {
+			"password": "Lp21:DIeuv", 
+			"salt": "salt1",
+			"hash": "0da7baa58ec080fd0b67057f97f5e7f"
+		},
+		"permission": "teacher"
 	},
 
 	"carol": {
 		"sub": "K95E-8UF1-7453C",
 		"preferred_username": "carol",
 		"name": "Carol",
-		"profile": "school-administrator",
+		"profile":  {
+			"favourite_colour": "green",
+			"favourite_animal": "cow" 
+		},
 		"email": "carol.school-administrator@example.net",
 		"email_verified": true,
-		"password": "Lp21:DIeuv",
-		"salt": "salt3",
-		"hash": "dffb8c1df66c57b67c6f8600d4337c65"
+		"permission_groupe": "school-administrator",
+		"credentials":  {
+			"password": "Lp21:DIeuv", 
+			"salt": "salt3",
+			"hash": "dffb8c1df66c57b67c6f8600d4337c65"
+		},
+		"permission": "school-administrator"
 	},
 
 	"dave": {
 		"sub": "G6R2-G6E1-7352D",
 		"preferred_username": "dave",
 		"name": "Dave",
-		"profile": "government-administrator",
+		"profile":  {
+			"favourite_colour": "pink",
+			"favourite_animal": "hamster" 
+		},
 		"email": "dave.government-administrator@example.net",
 		"email_verified": true,
-		"password": "Lp21:DIeuv",
-		"salt": "salt4",
-		"hash": "4beb0e02dd728806d0e9482baa8462ed"
+		"permission_groupe": "government-administrator",
+		"credentials":  {
+			"password": "Lp21:DIeuv", 
+			"salt": "salt4",
+			"hash": "4beb0e02dd728806d0e9482baa8462ed"
+		},
+		"permission": "government-administrator"
 	},
 
 	"mallory": {
 		"sub": "H6R3-J8Z5-5897M",
 		"preferred_username": "mallory",
 		"name": "Mallory",
-		"profile": "malicious attacker",
+		"profile":  {
+			"favourite_colour": "black",
+			"favourite_animal": "tiger" 
+		},
 		"email": "mallory.malicious-attacker.@example.net",
 		"email_verified": false,
-		"password": "Lp21:DIeuv",
-		"salt": "salt5",
-		"hash": "df5936712c7e37d7b79b2d8c7d506cd1"
+		"permission_groupe": "malicious-attacker",
+		"credentials":  {
+			"password": "Lp21:DIeuv", 
+			"salt": "salt5",
+			"hash": "df5936712c7e37d7b79b2d8c7d506cd1"
+		},
+		"permission": "malicious-attacker"
 	}
 		
 };

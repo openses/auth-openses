@@ -40,7 +40,7 @@
     <div class="container">
 
       <div class="jumbotron">
-      <p>This page represents the  <span class="label label-primary">client</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> laboratory:</p>
+      <p>This page represents the  <span class="label label-primary">Client (Relying Party RP)</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OpenID Connect ecosystem:</p>
       <br>
       <p>Code: <span class="label label-danger"><%= render_code ? render_code : 'NONE' %></span></p>
       <p>Access Token: <span class="label label-danger"><%- access_token ? access_token : 'NONE' %></span></p>
@@ -55,31 +55,45 @@
             <span class="label label-danger">NONE</span>
           <% } %></p>
       <p>Logged in User Subject: <span class="label label-warning"><%- sub ? sub : 'NONE' %></span> from Issuer: <span class="label label-warning"><%- iss ? iss : 'NONE' %></span></p>
-        <p>User Data from Identity Provider Resource:
+        <p>Data from Identity Provider Resource:
           <% if (userInfo) { %>
             <ul>
               <% _.each(userInfo, function(value, key, list) { %>
-              
-                <li><b><%- key %></b>: <%- value %></li>
-              
+          
+                <% if (key == 'profile') { %>
+						<li><b>profile:</b></li>
+            			<ul>
+              				<% _.each(profile, function(value, key, list) { %>
+	                		<li><b><%- key %></b>: <%- value %></li>
+              				<% }); %>
+            			</ul>
+            		<% } %>
+            	<% if (key == 'credentials') { %>
+						<li><b>credentials:</b></li>
+            			<ul>
+              				<% _.each(credentials, function(value, key, list) { %>
+	                		<li><b><%- key %></b>: <%- value %></li>
+              				<% }); %>
+            			</ul>
+            		<% } %>
+            	<% if (key !== 'credentials' && key !== 'profile') { %>
+						<li><b><%- key %></b>: <%- value %></li>
+            		<% } %>
               <% }); %>
             </ul>
             <% } else { %>
             <span class="label label-danger">NONE</span>
           <% } %>
-
-
-
         </p>
         <p>Data from Protected Resource:
             <% if (resource) { %> 
             <ul>
-                Permission for <%- profile %> profile : 
-                Create: <% if (profile == 'government-administrator') {%> yes <% } else { %> no <% } %> / 
-                Read: <% if (profile !== 'malicious attacker') {%> yes <% } else { %> no <% } %> /
-                Update: <% if (profile == 'government-administrator' || profile == 'teacher' || profile == 'school-administrator') {%> yes <% } else { %> no <% } %> / 
-                Delete: <% if (profile == 'government-administrator' || profile == 'school-administrator') {%> yes <% } else { %> no <% } %><br>
-                <% if (profile !== 'malicious attacker') { %> 
+                Permission for <%- permission %>: 
+                Create: <% if (permission == 'government-administrator') {%> yes <% } else { %> no <% } %> / 
+                Read: <% if (permission !== 'malicious-attacker') {%> yes <% } else { %> no <% } %> /
+                Update: <% if (permission == 'government-administrator' || permission == 'teacher' || permission == 'school-administrator') {%> yes <% } else { %> no <% } %> / 
+                Delete: <% if (permission == 'government-administrator' || permission == 'school-administrator') {%> yes <% } else { %> no <% } %><br>
+                <% if (permission !== 'malicious attacker') { %> 
                       Data: <%- JSON.stringify(resource, null, 4) %>
                   <% } else { %>
                   No access permission for protected Data!
@@ -90,7 +104,9 @@
           <% } %></p>
         
 
-      <a class="btn btn-default" href="/authorize">Sign In & Get Tokens</a> 
+      <a class="btn btn-default" href="/authorize">Sign In & Get Code</a> 
+      <a class="btn btn-default" href="/get_tokens">Get and Validate Tokens</a>
+      <a class="btn btn-default" href="/decode_jwt">Decode JWT</a>
       <a class="btn btn-default" href="/userinfo">Get User Information</a>
       <a class="btn btn-default" href="/fetch_resource">Get Protected Resource</a>
       
