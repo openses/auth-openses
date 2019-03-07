@@ -46,22 +46,12 @@ var client = {
 	"scope": "openid profile email permission credentials"
 };
 
-outputClient = outputClient + "client_id: " + "oauth-client-1" + "<br>";;
-outputClient = outputClient + "client_secret: " + "oauth-client-secret-1" + "<br>";
-// outputClient = outputClient + "\ redirect_uris: " + "http://" + serverURL + ":9000/callback" + "<br>";
-outputClient = outputClient + "\ redirect_uris: " + "http://" + serverURL + ":9000/callback_code" + "<br>";
-outputClient = outputClient + "client_id: " + "openid profile email phone address" + "<br>";
-
 // authorization server information
 var authServer = {
 	authorizationEndpoint: 'http://' + serverURL + ':9001/authorize',
 	tokenEndpoint: 'http://' + serverURL + ':9001/token',
 	userInfoEndpoint: 'http://' + serverURL + ':9002/userinfo'
 };
-
-outputClient = outputClient + "authorizationEndpoint: " + authServer.authorizationEndpoint + "<br>";
-outputClient = outputClient + "tokenEndpoint: " + "http://" + authServer.tokenEndpoint + "<br>";
-outputClient = outputClient + "userInfoEndpoint: " + "http://" + authServer.userInfoEndpoint + "<br>";
 
 var rsaKey = {
   "alg": "RS256",
@@ -74,26 +64,19 @@ var rsaKey = {
 var protectedResource = 'http://' + serverURL + ':9002/resource';
 
 var state = null;
-// var render_code = null;
-// var access_token = null;
-// var refresh_token = null;
-// var scope = null;
-// var id_token = null;
-// var userInfo = null;
-// var sub = null;
-// var iss = null;
-// var body_id_token = null;
-// var protectedResourceVar = null;
-
-
 
 clientApp.get('/', function (req, res, next) {
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 });
 
 clientApp.get('/authorize', function(req, res){
 
-	req.session.oidcflow= 'start';
+	// req.session.oidcflow= 'start';
+
+	if (!req.session.oidcflow ) {
+		req.session.oidcflow = 'z';
+	};
+	req.session.oidcflow = req.session.oidcflow.concat('a');
 
 	var access_token = null;
 	req.session.access_token = access_token;
@@ -236,12 +219,12 @@ clientApp.get("/callback", function(req, res){
 			req.session.iss = iss;
 			
 			// res.render('userinfo', {userInfo: userInfo, id_token: id_token});
-			res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials});
+			res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 			return;
 		}
 		
 		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 		return;
 
 	} else {
@@ -252,7 +235,13 @@ clientApp.get("/callback", function(req, res){
 
 clientApp.get("/callback_code", function(req, res){
 
-	req.session.oidcflow = 'code';
+	// req.session.oidcflow = 'code';
+	if (!req.session.oidcflow) {
+		req.session.oidcflow = 'z';
+	};
+	if (req.session.oidcflow.includes('a')) {
+	req.session.oidcflow = req.session.oidcflow.concat('b');
+	};
 
 	if (req.query.error) {
 		// it's an error response, act accordingly
@@ -276,15 +265,21 @@ clientApp.get("/callback_code", function(req, res){
 
 	var code = req.query.code;
 	req.session.render_code = code;
-	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials});
+	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 	return;
 });
 
 
 clientApp.get("/get_tokens", function(req, res){
 
-	req.session.oidcflow = 'tokens';
-
+	// req.session.oidcflow = 'tokens';
+	if (!req.session.oidcflow ) {
+		req.session.oidcflow = 'z';
+	};
+	if (req.session.oidcflow.includes('b')) {
+		req.session.oidcflow = req.session.oidcflow.concat('c');
+		};
+	
 	if (req.query.error) {
 		// it's an error response, act accordingly
 		var access_token = null;
@@ -301,26 +296,9 @@ clientApp.get("/get_tokens", function(req, res){
 		req.session.destroy();
 		return;
 	}
-	
-	/* var resState = req.query.state;
-	if (resState == state) {
-		console.log('State value matches: expected %s got %s', state, resState);
-		outputClient = outputClient + "State value matches: expected %s got %s: " + state + " " + resState + "<br>";
-	} else {
-		console.log('State DOES NOT MATCH: expected %s got %s', state, resState);
-		outputClient = outputClient + "St'State DOES NOT MATCH: expected %s got %s: " + state + " " + resState + "<br>";
-		res.render('error', {error: 'State value did not match'});
-		outputClient = outputClient + "error: " + "State value did not match" + "<br>";
-		return;
-	}
- */
 
-var resState = req.session.resState;
-// req.session.resState = resr.State;
-	// var code = req.query.code;
+	var resState = req.session.resState;
 	var code = req.session.render_code;
-	// req.session.render_code = code;
-	
 
 	var form_data = qs.stringify({
 				grant_type: 'authorization_code',
@@ -406,12 +384,12 @@ var resState = req.session.resState;
 			req.session.iss = payload.iss;
 			
 			// res.render('userinfo', {userInfo: userInfo, id_token: id_token});
-			res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials});
+			res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 			return;
 		}
 		
 		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 		return;
 
 	} else {
@@ -421,14 +399,28 @@ var resState = req.session.resState;
 });
 
 clientApp.get('/decode_jwt', function(req, res) {
-	req.session.oidcflow = 'decode_jwt';
+	// req.session.oidcflow = 'decode_jwt';
+	if (!req.session.oidcflow ) {
+		req.session.oidcflow = 'z';
+	};
+	if (req.session.oidcflow.includes('c')) {
+		req.session.oidcflow = req.session.oidcflow.concat('d');
+		};
 	iss = req.session.iss;
 	sub = req.session.sub;
-	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials});
+	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 });
 
 
 clientApp.get('/fetch_resource', function(req, res) {
+
+	// req.session.oidcflow = 'protectedResource';
+	if (!req.session.oidcflow ) {
+		req.session.oidcflow = 'z';
+	};
+	if (req.session.oidcflow.includes('e')) {
+		req.session.oidcflow = req.session.oidcflow.concat('f');
+		};
 
 	var access_token = req.session.access_token;
 
@@ -453,7 +445,7 @@ clientApp.get('/fetch_resource', function(req, res) {
 		protectedResourceVar = body;
 		req.session.protectedResourceVar = protectedResourceVar;
 		// res.render('data', {resource: body});
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 		return;
 	} else {
 		access_token = null;
@@ -465,7 +457,13 @@ clientApp.get('/fetch_resource', function(req, res) {
 });
 
 clientApp.get('/userinfo', function(req, res) {
-	
+	// req.session.oidcflow = 'userInfo';
+	if (!req.session.oidcflow ) {
+		req.session.oidcflow = 'z';
+	}; 
+	if (req.session.oidcflow.includes('d')) {
+		req.session.oidcflow = req.session.oidcflow.concat('e');
+		};
 	var access_token = req.session.access_token;
 	var id_token = req.session.id_token
 	// var profile = null;
@@ -491,16 +489,14 @@ clientApp.get('/userinfo', function(req, res) {
 		console.log('profile: ', body.profile);
 		console.log('req.session.permission: ', req.session.permission);
 		console.log('req.session.credentials: ', req.session.credentials);
-		
 	
 		// res.render('userinfo', {userInfo:  userInfo, id_token: id_token});
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 		return;
 	} else {
 		res.render('error', {error: 'Unable to fetch user information'});
 		return;
 	}
-	
 });
 
 clientApp.use('/', express.static('files/client'));
@@ -524,16 +520,6 @@ var buildUrl = function(base, options, hash) {
 var encodeClientCredentials = function(clientId, clientSecret) {
 	return new Buffer(querystring.escape(clientId) + ':' + querystring.escape(clientSecret)).toString('base64');
 };
-
-function clearOutputClient(){
-	outputClient = "";
-
-}
-
-clientApp.get('/outputClient', function(req, res,) {
-	res.render('outputClient', {outputClient: outputClient});
-	return;	
-});
 
 const clientHttpServer = http.createServer(clientApp);
 
