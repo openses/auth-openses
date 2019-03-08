@@ -19,8 +19,8 @@ var serverURL;
 // in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
 // client/index.html -> Zeile 97 
 // authorizationServer/error.html -> Zeile 32
-// serverURL = 'localhost';
-serverURL = 'auth-openses.westeurope.azurecontainer.io';
+serverURL = 'localhost';
+// serverURL = 'auth-openses.westeurope.azurecontainer.io';
 
 
 
@@ -156,17 +156,18 @@ clientApp.get("/callback", function(req, res){
 		
 	if (tokRes.statusCode >= 200 && tokRes.statusCode < 300) {
 		var body = JSON.parse(tokRes.getBody());
+		
 	
 		access_token = body.access_token;
 		req.session.access_token = access_token;
 		console.log('Got access token: %s', access_token);
-		outputClient = outputClient + "access token: %s" + access_token  + "<br>";
 		if (body.refresh_token) {
 			refresh_token = body.refresh_token;
 			req.session.refresh_token = refresh_token;
 			console.log('Got refresh token: %s', refresh_token);
 			outputClient = outputClient + "refresh token: %s" + refresh_token  + "<br>";
 		}
+
 		
 		scope = body.scope;
 		req.session.scope = scope;
@@ -321,7 +322,7 @@ clientApp.get("/get_tokens", function(req, res){
 		
 	if (tokRes.statusCode >= 200 && tokRes.statusCode < 300) {
 		var body = JSON.parse(tokRes.getBody());
-	
+		req.session.body = body;
 		access_token = body.access_token;
 		req.session.access_token = access_token;
 		console.log('Got access token: %s', access_token);
@@ -332,7 +333,9 @@ clientApp.get("/get_tokens", function(req, res){
 			console.log('Got refresh token: %s', refresh_token);
 			outputClient = outputClient + "refresh token: %s" + refresh_token  + "<br>";
 		}
-		
+
+
+		body = req.session.body;
 		scope = body.scope;
 		req.session.scope = scope;
 		console.log('Got scope: %s', scope);
@@ -398,62 +401,183 @@ clientApp.get("/get_tokens", function(req, res){
 	}
 });
 
-clientApp.get('/decode_jwt', function(req, res) {
-	// req.session.oidcflow = 'decode_jwt';
+clientApp.get("/get_access_token", function(req, res){
+
+	// req.session.oidcflow = 'tokens';
+	if (!req.session.oidcflow ) {
+		req.session.oidcflow = 'z';
+	};
+	if (req.session.oidcflow.includes('b')) {
+		req.session.oidcflow = req.session.oidcflow.concat('c');
+		};
+	
+	if (req.query.error) {
+		// it's an error response, act accordingly
+		var access_token = null;
+		var refresh_token = null;
+		var scope = null;
+		render_code = null;
+		var body_id_token = null;
+		var id_token = null;
+		var sub = null;
+		var iss = null;
+		var userInfo = null;
+		var protectedResourceVar = null;
+		res.render('error', {error: req.query.error});
+		req.session.destroy();
+		return;
+	}
+
+	var resState = req.session.resState;
+	var code = req.session.render_code;
+
+	var form_data = qs.stringify({
+				grant_type: 'authorization_code',
+				code: code,
+				redirect_uri: client.redirect_uris[0]
+			});
+	var headers = {
+		'Content-Type': 'application/x-www-form-urlencoded',
+		'Authorization': 'Basic ' + encodeClientCredentials(client.client_id, client.client_secret)
+	};
+
+	var tokRes = request('POST', authServer.tokenEndpoint, 
+		{	
+			body: form_data,
+			headers: headers
+		}
+	);
+
+	console.log('Requesting access token for code %s',code);
+		
+	if (tokRes.statusCode >= 200 && tokRes.statusCode < 300) {
+		var body = JSON.parse(tokRes.getBody());
+		req.session.body = body;
+		access_token = body.access_token;
+		req.session.access_token = access_token;
+		console.log('Got access token: %s', access_token);
+		outputClient = outputClient + "access token: %s" + access_token  + "<br>";
+		if (body.refresh_token) {
+			refresh_token = body.refresh_token;
+			req.session.refresh_token = refresh_token;
+			console.log('Got refresh token: %s', refresh_token);
+			outputClient = outputClient + "refresh token: %s" + refresh_token  + "<br>";
+		}
+
+
+		
+		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+		return;
+
+	} else {
+		res.render('error', {error: 'Unable to fetch access token, server response: ' + tokRes.statusCode})
+		return;
+	}
+});
+
+clientApp.get("/get_id_token", function(req, res){
+
+	// req.session.oidcflow = 'tokens';
 	if (!req.session.oidcflow ) {
 		req.session.oidcflow = 'z';
 	};
 	if (req.session.oidcflow.includes('c')) {
 		req.session.oidcflow = req.session.oidcflow.concat('d');
 		};
-	iss = req.session.iss;
-	sub = req.session.sub;
-	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+	
+	if (req.query.error) {
+		// it's an error response, act accordingly
+		var access_token = null;
+		var refresh_token = null;
+		var scope = null;
+		render_code = null;
+		var body_id_token = null;
+		var id_token = null;
+		var sub = null;
+		var iss = null;
+		var userInfo = null;
+		var protectedResourceVar = null;
+		res.render('error', {error: req.query.error});
+		req.session.destroy();
+		return;
+	}
+
+	var resState = req.session.resState;
+	var code = req.session.render_code;
+
+		body = req.session.body;
+		scope = body.scope;
+		req.session.scope = scope;
+		console.log('Got scope: %s', scope);
+		outputClient = outputClient + "scope: %s" + scope  + "<br>";
+
+		if (body.id_token) {
+			userInfo = null;
+			id_token = null;
+
+			console.log('Got ID token: %s', body.id_token);
+			outputClient = outputClient + "ID token: %s" + body.id_token  + "<br>";
+			body_id_token = body.id_token;
+			req.session.body_id_token = body_id_token;
+			// check the id token
+			var pubKey = jose.KEYUTIL.getKey(rsaKey);
+			var tokenParts = body.id_token.split('.');
+			var payload = JSON.parse(base64url.decode(tokenParts[1]));
+			console.log('Payload', payload);
+			if (jose.jws.JWS.verify(body.id_token, pubKey, [rsaKey.alg])) {
+				console.log('Signature validated.');
+				if (payload.iss == 'http://' + serverURL + ':9001/') {
+					console.log('issuer OK');
+					if ((Array.isArray(payload.aud) && __.contains(payload.aud, client.client_id)) || 
+						payload.aud == client.client_id) {
+						console.log('Audience OK');
+		
+						var now = Math.floor(Date.now() / 1000);
+		
+						if (payload.iat <= now) {
+							console.log('issued-at OK');
+							if (payload.exp >= now) {
+								console.log('expiration OK');
+				
+								console.log('Token valid!');
+
+								// save just the payload, not the container (which has been validated)
+								id_token = payload;
+								
+				
+							}
+						}
+					}
+				}
+			}
+			req.session.userInfo = userInfo;
+			sub = null;
+			req.session.sub = payload.sub;
+			iss = null;
+			req.session.iss = payload.iss;
+			
+			// res.render('userinfo', {userInfo: userInfo, id_token: id_token});
+			res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+			return;
+		}
+		
+		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+		return;	
 });
 
-
-clientApp.get('/fetch_resource', function(req, res) {
-
-	// req.session.oidcflow = 'protectedResource';
+clientApp.get('/decode_jwt', function(req, res) {
+	// req.session.oidcflow = 'decode_jwt';
 	if (!req.session.oidcflow ) {
 		req.session.oidcflow = 'z';
 	};
-	if (req.session.oidcflow.includes('e')) {
-		req.session.oidcflow = req.session.oidcflow.concat('f');
+	if (req.session.oidcflow.includes('d')) {
+		req.session.oidcflow = req.session.oidcflow.concat('e');
 		};
-
-	var access_token = req.session.access_token;
-
-	if (!access_token) {
-		res.render('error', {error: 'Missing access token.'});
-		return;
-	}
-	
-	console.log('Making request with access token %s', access_token);
-	
-	var headers = {
-		'Authorization': 'Bearer ' + access_token,
-		'Content-Type': 'application/x-www-form-urlencoded'
-	};
-	
-	var resource = request('POST', protectedResource,
-		{headers: headers}
-	);
-	
-	if (resource.statusCode >= 200 && resource.statusCode < 300) {
-		var body = JSON.parse(resource.getBody());
-		protectedResourceVar = body;
-		req.session.protectedResourceVar = protectedResourceVar;
-		// res.render('data', {resource: body});
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-		return;
-	} else {
-		access_token = null;
-		req.session.access_token = access_token;
-		res.render('error', {error: 'Server returned response code: ' + resource.statusCode});
-		return;
-	}
-	
+	iss = req.session.iss;
+	sub = req.session.sub;
+	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 });
 
 clientApp.get('/userinfo', function(req, res) {
@@ -461,8 +585,8 @@ clientApp.get('/userinfo', function(req, res) {
 	if (!req.session.oidcflow ) {
 		req.session.oidcflow = 'z';
 	}; 
-	if (req.session.oidcflow.includes('d')) {
-		req.session.oidcflow = req.session.oidcflow.concat('e');
+	if (req.session.oidcflow.includes('e')) {
+		req.session.oidcflow = req.session.oidcflow.concat('f');
 		};
 	var access_token = req.session.access_token;
 	var id_token = req.session.id_token
@@ -498,6 +622,52 @@ clientApp.get('/userinfo', function(req, res) {
 		return;
 	}
 });
+
+clientApp.get('/fetch_resource', function(req, res) {
+
+	// req.session.oidcflow = 'protectedResource';
+	if (!req.session.oidcflow ) {
+		req.session.oidcflow = 'z';
+	};
+	if (req.session.oidcflow.includes('f')) {
+		req.session.oidcflow = req.session.oidcflow.concat('g');
+		};
+
+	var access_token = req.session.access_token;
+
+	if (!access_token) {
+		res.render('error', {error: 'Missing access token.'});
+		return;
+	}
+	
+	console.log('Making request with access token %s', access_token);
+	
+	var headers = {
+		'Authorization': 'Bearer ' + access_token,
+		'Content-Type': 'application/x-www-form-urlencoded',
+		'permission': req.session.permission
+	};
+	
+	var resource = request('POST', protectedResource,
+		{headers: headers}
+	);
+	
+	if (resource.statusCode >= 200 && resource.statusCode < 300) {
+		var body = JSON.parse(resource.getBody());
+		protectedResourceVar = body;
+		req.session.protectedResourceVar = protectedResourceVar;
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+		return;
+	} else {
+		access_token = null;
+		req.session.access_token = access_token;
+		res.render('error', {error: 'Server returned response code: ' + resource.statusCode});
+		return;
+	}
+	
+});
+
+
 
 clientApp.use('/', express.static('files/client'));
 

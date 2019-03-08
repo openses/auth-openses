@@ -30,9 +30,37 @@ var resource = {
 	"description": "This data has been protected by OAuth 2.0"
 };
 
+var resource_student = {
+	"name": "Protected Resource Student",
+	"description": "This data has been protected by OAuth 2.0 for the permission 'student'"
+};
+
+var resource_teacher = {
+	"name": "Protected Resource Teacher",
+	"description": "This data has been protected by OAuth 2.0 for the permission 'teacher'"
+};
+
+var resource_school_administrator = {
+	"name": "Protected Resource School Administrator",
+	"description": "This data has been protected by OAuth 2.0 for the permission 'school-administrator'"
+};
+
+var resource_government_administrator = {
+	"name": "Protected Resource Government Administrator",
+	"description": "This data has been protected by OAuth 2.0 for the permission 'government-administrator'"
+};
+
+var resource_malicious_attacker = {
+	"name": "Protected Resource Malicious Attacker",
+	"description": "This data has been protected by OAuth 2.0 for the permission 'malicious-attacker'"
+};
+
 var getAccessToken = function(req, res, next) {
 	// check the auth header first
 	var auth = req.headers['authorization'];
+	var permission = req.headers.permission;
+	req.permission = permission;
+	res.permission = permission;
 	var inToken = null;
 	if (auth && auth.toLowerCase().indexOf('bearer') == 0) {
 		inToken = auth.slice('bearer '.length);
@@ -45,6 +73,7 @@ var getAccessToken = function(req, res, next) {
 	
 	console.log('Incoming token: %s', inToken);
 	console.log('req.access_token: %s', req.access_token);
+	console.log('permission: %s', permission);
 
 
 		/*
@@ -93,7 +122,25 @@ protectedResourceApp.options('/resource', cors());
 protectedResourceApp.post("/resource", cors(), getAccessToken, function(req, res){
 	console.log(req.access_token);
 	if (req.access_token) {
-		res.json(resource);
+		// res.json(resource);
+		if (req.permission == 'student') {
+		res.json(resource_student);
+		}
+		else if (req.permission == 'teacher') {
+			res.json(resource_teacher);
+			}
+		else if (req.permission == 'school-administrator') {
+			res.json(resource_school_administrator);
+			}
+		else if (req.permission == 'government-administrator') {
+			res.json(resource_government_administrator);
+			}
+		else if (req.permission == 'malicious-attacker') {
+			res.json(resource_malicious_attacker);
+			}		
+		else {
+			res.status(401).end();
+		};
 	} else {
 		res.status(401).end();
 	}

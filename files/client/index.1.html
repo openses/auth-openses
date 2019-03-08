@@ -42,24 +42,21 @@
       <div class="jumbotron">
       <p>This page represents the  <span class="label label-primary">Client (Relying Party RP)</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OpenID Connect ecosystem:</p>
       <br>
-      <a class="btn btn-default" href="/authorize">1 Sign In & Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
-      <br>
-      <a class="btn btn-default" href="/get_access_token">2.1 Get Access Token</a> Access Token: <span class="label label-danger"><%- (access_token && oidcflow.includes('b')) ? access_token : 'NONE' %></span> <a class="btn btn-default" href="/fetch_resource">2.2 Get Protected Resource without UserID</a><br>
-      <br>
-      <a class="btn btn-default" href="/get_id_token">3.1 Get Scope and ID Token</a> Scope: <span class="label label-warning"><%- (scope && oidcflow.includes('d')) ? scope : 'NONE' %></span><br>
-      ID Token (JSON Web Token / JWT): 
-          <% if (id_token && oidcflow.includes('d')) { %> 
+      <p>Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span></p>
+      <p>Access Token: <span class="label label-danger"><%- (access_token && oidcflow.includes('a') && oidcflow.includes('b')) ? access_token : 'NONE' %></span></p>
+		  <p>Scope: <span class="label label-warning"><%- (scope && oidcflow.includes('a') && oidcflow.includes('b') && oidcflow.includes('c')) ? scope : 'NONE' %></span></p>
+      <p>Refresh Token: <span class="label label-danger"><%- refresh_token ? refresh_token : 'NONE' %></span></p>
+      <p>ID Token (JSON Web Token / JWT): 
+          <% if (id_token && oidcflow.includes('a') && oidcflow.includes('b') && oidcflow.includes('c')) { %> 
             <pre>
                 <span class="label label-danger" style="font-size:12pt"><%- id_token %></span>
             </pre>
             <% } else { %>
             <span class="label label-danger">NONE</span>
-          <% } %><br>
-      <br>
-      <a class="btn btn-default" href="/decode_jwt">3.2 Decode ID Token</a> Logged in User Subject: <span class="label label-warning"><%- (sub && oidcflow.includes('e')) ? sub : 'NONE' %></span> from Issuer: <span class="label label-warning"><%- (iss && oidcflow.includes('e')) ? iss : 'NONE' %></span><br>
-      <br>
-      <a class="btn btn-default" href="/userinfo">3.3 Get User Data based on Scope</a> Data from Identity Provider Resource:
-          <% if (userInfo && oidcflow.includes('f')) { %>
+          <% } %></p>
+      <p>Logged in User Subject: <span class="label label-warning"><%- (sub && oidcflow.includes('a') && oidcflow.includes('b') && oidcflow.includes('c') && oidcflow.includes('d')) ? sub : 'NONE' %></span> from Issuer: <span class="label label-warning"><%- (iss && oidcflow.includes('a') && oidcflow.includes('b') && oidcflow.includes('c') && oidcflow.includes('d')) ? iss : 'NONE' %></span></p>
+        <p>Data from Identity Provider Resource:
+          <% if (userInfo && oidcflow.includes('a') && oidcflow.includes('b') && oidcflow.includes('c') && oidcflow.includes('d') && oidcflow.includes('e')) { %>
             <ul>
               <% _.each(userInfo, function(value, key, list) { %>
           
@@ -87,10 +84,9 @@
             <% } else { %>
             <span class="label label-danger">NONE</span>
           <% } %>
-        <br>
-        <br>
-        <a class="btn btn-default" href="/fetch_resource">3.4 Get Protected Resource</a> Data from Protected Resource:
-            <% if (resource && oidcflow.includes('g')) { %> 
+        </p>
+        <p>Data from Protected Resource:
+            <% if (resource && oidcflow.includes('a') && oidcflow.includes('b') && oidcflow.includes('c') && oidcflow.includes('d') && oidcflow.includes('e') && oidcflow.includes('f')) { %> 
             <ul>
                 Permission for <%- permission %>: 
                 Create: <% if (permission == 'government-administrator') {%> yes <% } else { %> no <% } %> / 
@@ -105,12 +101,22 @@
               </ul>
             <% } else { %>
             <span class="label label-danger">NONE</span>
-          <% } %>      
-      <br> 
-      <br>
-      <a class="btn btn-default" href="http://localhost:9000/callback?error=access_denied">4 Sign Out & Destroy Session</a>
+          <% } %></p>
+        
+
+      <a class="btn btn-default" href="/authorize">Sign In & Get Code</a> 
+      <a class="btn btn-default" href="/get_tokens">Get and Validate Tokens</a>
+      <a class="btn btn-default" href="/decode_jwt">Decode JWT</a>
+      <a class="btn btn-default" href="/userinfo">Get User Information</a>
+      <a class="btn btn-default" href="/fetch_resource">Get Protected Resource</a>
+      
+      <a class="btn btn-default" href="http://localhost:9000/callback?error=access_denied">Sign Out & Destroy Session</a>
       </div>
+
     </div><!-- /.container -->
+
+	
+	
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
