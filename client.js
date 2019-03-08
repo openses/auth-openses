@@ -464,7 +464,10 @@ clientApp.get("/get_access_token", function(req, res){
 			outputClient = outputClient + "refresh token: %s" + refresh_token  + "<br>";
 		}
 
-
+		scope = body.scope;
+		req.session.scope = scope;
+		console.log('Got scope: %s', scope);
+		outputClient = outputClient + "scope: %s" + scope  + "<br>";
 		
 		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
 		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: sub, iss: iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
@@ -474,6 +477,50 @@ clientApp.get("/get_access_token", function(req, res){
 		res.render('error', {error: 'Unable to fetch access token, server response: ' + tokRes.statusCode})
 		return;
 	}
+});
+
+clientApp.get('/fetch_resource_with_access_token', function(req, res) {
+
+	// req.session.oidcflow = 'protectedResource';
+	if (!req.session.oidcflow ) {
+		req.session.oidcflow = 'z';
+	};
+	if (req.session.oidcflow.includes('c')) {
+		req.session.oidcflow = req.session.oidcflow.concat('x');
+		};
+
+	var access_token = req.session.access_token;
+
+	if (!access_token) {
+		res.render('error', {error: 'Missing access token.'});
+		return;
+	}
+	
+	console.log('Making request with access token %s', access_token);
+	
+	var headers = {
+		'Authorization': 'Bearer ' + access_token,
+		'Content-Type': 'application/x-www-form-urlencoded',
+		'fetch_resource_with_access_token': true
+	};
+	
+	var resource = request('POST', protectedResource,
+		{headers: headers}
+	);
+	
+	if (resource.statusCode >= 200 && resource.statusCode < 300) {
+		var body = JSON.parse(resource.getBody());
+		protectedResourceVar = body;
+		req.session.protectedResourceVar = protectedResourceVar;
+		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+		return;
+	} else {
+		access_token = null;
+		req.session.access_token = access_token;
+		res.render('error', {error: 'Server returned response code: ' + resource.statusCode});
+		return;
+	}
+	
 });
 
 clientApp.get("/get_id_token", function(req, res){
@@ -507,10 +554,10 @@ clientApp.get("/get_id_token", function(req, res){
 	var code = req.session.render_code;
 
 		body = req.session.body;
-		scope = body.scope;
+		/* scope = body.scope;
 		req.session.scope = scope;
 		console.log('Got scope: %s', scope);
-		outputClient = outputClient + "scope: %s" + scope  + "<br>";
+		outputClient = outputClient + "scope: %s" + scope  + "<br>"; */
 
 		if (body.id_token) {
 			userInfo = null;

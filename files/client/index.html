@@ -40,14 +40,25 @@
     <div class="container">
 
       <div class="jumbotron">
-      <p>This page represents the  <span class="label label-primary">Client (Relying Party RP)</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OpenID Connect ecosystem:</p>
+      <p>This page represents the  <span class="label label-primary">Client</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
       <br>
-      <a class="btn btn-default" href="/authorize">1 Sign In & Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
+      <a class="btn btn-default" href="/authorize">1 Go to Authorization Server: Sign In & Approve this Client and Scope & Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
       <br>
-      <a class="btn btn-default" href="/get_access_token">2.1 Get Access Token</a> Access Token: <span class="label label-danger"><%- (access_token && oidcflow.includes('b')) ? access_token : 'NONE' %></span> <a class="btn btn-default" href="/fetch_resource">2.2 Get Protected Resource without UserID</a><br>
+      <a class="btn btn-default" href="/get_access_token">2.1 Get Access Token and Scope from Authorization Server</a>
+        Access Token: <span class="label label-danger"><%- (access_token && oidcflow.includes('b')) ? access_token : 'NONE' %></span>
+        Scope: <span class="label label-warning"><%- (scope && oidcflow.includes('b')) ? scope : 'NONE' %></span><br><br>
+      <a class="btn btn-default" href="/fetch_resource_with_access_token">2.2 Get Data from Protected Resource without UserID</a> 
+      Data from Protected Resource:
+      <span class="label label-danger"> 
+      <% if (access_token && oidcflow.includes('x')) { %> 
+        Data: <%- JSON.stringify(resource, null, 4) %>
+    <% } else { %>
+    NONE
+  <% } %>
+      </span><br>
       <br>
-      <a class="btn btn-default" href="/get_id_token">3.1 Get Scope and ID Token</a> Scope: <span class="label label-warning"><%- (scope && oidcflow.includes('d')) ? scope : 'NONE' %></span><br>
-      ID Token (JSON Web Token / JWT): 
+      <a class="btn btn-default" href="/get_id_token">3.1 Get ID Token from Authorization Server</a>
+       ID Token (JSON Web Token / JWT): 
           <% if (id_token && oidcflow.includes('d')) { %> 
             <pre>
                 <span class="label label-danger" style="font-size:12pt"><%- id_token %></span>
@@ -58,7 +69,7 @@
       <br>
       <a class="btn btn-default" href="/decode_jwt">3.2 Decode ID Token</a> Logged in User Subject: <span class="label label-warning"><%- (sub && oidcflow.includes('e')) ? sub : 'NONE' %></span> from Issuer: <span class="label label-warning"><%- (iss && oidcflow.includes('e')) ? iss : 'NONE' %></span><br>
       <br>
-      <a class="btn btn-default" href="/userinfo">3.3 Get User Data based on Scope</a> Data from Identity Provider Resource:
+      <a class="btn btn-default" href="/userinfo">3.3 Get User Data from Authorization Server (Based on Scope)</a> Data from Identity Provider:
           <% if (userInfo && oidcflow.includes('f')) { %>
             <ul>
               <% _.each(userInfo, function(value, key, list) { %>
@@ -89,9 +100,10 @@
           <% } %>
         <br>
         <br>
-        <a class="btn btn-default" href="/fetch_resource">3.4 Get Protected Resource</a> Data from Protected Resource:
+        <a class="btn btn-default" href="/fetch_resource">3.4 Get Data from Protected Resource based on Scope and ID Token</a> Data from Protected Resource:
             <% if (resource && oidcflow.includes('g')) { %> 
             <ul>
+                Data owner: <%- userInfo.name %><br>
                 Permission for <%- permission %>: 
                 Create: <% if (permission == 'government-administrator') {%> yes <% } else { %> no <% } %> / 
                 Read: <% if (permission !== 'malicious-attacker') {%> yes <% } else { %> no <% } %> /
