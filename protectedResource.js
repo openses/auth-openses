@@ -59,13 +59,15 @@ var resource_with_access_token = {
 	"name": "Protected Resource anonymous Access",
 	"description": "This data has been protected by OAuth 2.0 for access with Access Token but No ID Token"
 };
+
 var getAccessToken = function(req, res, next) {
 	// check the auth header first
 	var auth = req.headers['authorization'];
 	var permission = req.headers.permission;
 	req.permission = permission;
-	var fetch_resource_with_access_token = req.headers.etch_resource_with_access_token;
+	var fetch_resource_with_access_token = req.headers.fetch_resource_with_access_token;
 	req.fetch_resource_with_access_token = fetch_resource_with_access_token;
+	console.log('req.fetch_resource_with_access_token: %s', req.fetch_resource_with_access_token);
 	var inToken = null;
 	if (auth && auth.toLowerCase().indexOf('bearer') == 0) {
 		inToken = auth.slice('bearer '.length);
@@ -77,6 +79,7 @@ var getAccessToken = function(req, res, next) {
 	}
 	
 	console.log('Incoming token: %s', inToken);
+	console.log('req.body.fetch_resource_with_access_token: ', req.body.fetch_resource_with_access_token)
 	console.log('req.access_token: %s', req.access_token);
 	console.log('permission: %s', permission);
 	console.log('res.fetch_resource_with_access_token: %s', req.fetch_resource_with_access_token);
@@ -129,7 +132,10 @@ protectedResourceApp.post("/resource", cors(), getAccessToken, function(req, res
 	console.log(req.access_token);
 	if (req.access_token) {
 		// res.json(resource);
-		if (req.permission == 'student') {
+		if (req.fetch_resource_with_access_token == 'true') {
+			res.json(resource_with_access_token);
+				}
+		else if (req.permission == 'student') {
 		res.json(resource_student);
 		}
 		else if (req.permission == 'teacher') {
@@ -144,10 +150,7 @@ protectedResourceApp.post("/resource", cors(), getAccessToken, function(req, res
 		else if (req.permission == 'malicious-attacker') {
 			res.json(resource_malicious_attacker);
 			}
-		else if (!req.fetch_resource_with_access_token) {
-			res.json(resource_with_access_token);
-				}		
-		else {
+				else {
 			res.status(401).end();
 		};
 	} else {

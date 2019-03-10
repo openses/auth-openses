@@ -176,8 +176,6 @@ var getPassword = function(username) {
 	return userInfo[password];
 };
 
-
-
 var codes = {};
 
 var requests = {};
