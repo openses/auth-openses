@@ -26,28 +26,28 @@
   </head>
   <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color:#546E7A;">
       <div class="container">
         <div class="navbar-header">
-          <a target="_blank" class="navbar-brand" href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a>
-          <a class="navbar-brand" href="/"><span class="label label-primary">Client/Relying Party</span></a>
-          <a target="_blank" class="navbar-brand" href="http://oauth.eidlab.ch"><span class="label label-danger">Authorization</span></a>
-          <a target="_blank" class="navbar-brand" href="http://resource.eidlab.ch"><span class="label label-success">Resources</span></a>
+          <a target="_blank" class="navbar-brand" href="http://eidlab.ch"><img _ngcontent-c0="" alt="Identity Federation Playground / eIdLab.ch" src="/toolbar_logo.png"></a>
+          <a target="_blank" class="navbar-brand" href="http://oauth.eidlab.ch"><span class="label label-danger">Go To Authorization Server</span></a>
+          <a target="_blank" class="navbar-brand" href="http://resource.eidlab.ch/info"><span class="label label-warning">Go To Protected Resources Server</span></a>
         </div>
+        <br><br><br>
       </div>
     </nav>
-
+<br><br>
     <div class="container">
 
       <div class="jumbotron">
-      <p>This page represents the  <span class="label label-primary">Client</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
+      <p>This page represents the  <span class="label label-primary">Client/Relying Party</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
       <br>
-      <a class="btn btn-default" href="/authorize">1 Go to Authorization Server: Sign In & Approve this Client and Scope & Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
+      <a class="btn btn-default" href="/authorize">1 Go to Authorization Server: Sign In and Approve this Client and Scope & Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
       <br>
-      <a class="btn btn-default" href="/get_access_token">2.1 Get Access and Refresh Token and Scope from Authorization Server</a>
+      <a class="btn btn-default" href="/get_access_token">2.1 Get Access (Refresh) Token and Scope from Authorization Server</a>
         Access Token: <span class="label label-danger"><%- (access_token && oidcflow.includes('b')) ? access_token : 'NONE' %></span>
         Refresh token value: <span class="label label-danger"><%- (refresh_token && oidcflow.includes('b')) ? refresh_token : 'NONE' %></span>
-        Scope: <span class="label label-warning"><%- (scope && oidcflow.includes('b')) ? scope : 'NONE' %></span><br><br>
+        Scope: <span class="label label-danger"><%- (scope && oidcflow.includes('b')) ? scope : 'NONE' %></span><br><br>
       <a class="btn btn-default" href="/fetch_resource_with_access_token">2.2 Get Data from Protected Resource without UserID</a> 
       Data from Protected Resource:
       <span class="label label-danger">
@@ -71,11 +71,11 @@
             <span class="label label-danger">NONE</span>
           <% } %><br>
       <br>
-      <a class="btn btn-default" href="/decode_jwt">3.2 Decode ID Token</a> Logged in User Subject: <span class="label label-warning"><%- (sub && oidcflow.includes('e')) ? sub : 'NONE' %></span> from Issuer: <span class="label label-warning"><%- (iss && oidcflow.includes('e')) ? iss : 'NONE' %></span><br>
+      <a class="btn btn-default" href="/decode_jwt">3.2 Decode ID Token</a> Logged in User Subject: <span class="label label-danger"><%- (sub && oidcflow.includes('e')) ? sub : 'NONE' %></span> from Issuer: <span class="label label-danger"><%- (iss && oidcflow.includes('e')) ? iss : 'NONE' %></span><br>
       <br>
-      <a class="btn btn-default" href="/userinfo">3.3 Get User Data from Identity Provider (Based on Scope)</a> Data from Identity Provider:
-          <% if (userInfo && oidcflow.includes('f')) { %>
-            <ul>
+      <a class="btn btn-default" href="/userinfo">3.3 Get User Data from Identity Provider (based on Scope)</a> Data from Identity Provider:
+      <% if (userInfo && oidcflow.includes('f')) { %>
+            <ul style="background-color:#F0AD4E;color:white">
               <% _.each(userInfo, function(value, key, list) { %>
           
                 <% if (key == 'profile') { %>
@@ -100,13 +100,13 @@
               <% }); %>
             </ul>
             <% } else { %>
-            <span class="label label-danger">NONE</span>
+              <span class="label label-warning">NONE</span>
           <% } %>
         <br>
         <br>
-        <a class="btn btn-default" href="/fetch_resource">3.4 Get Data from Protected Resource based on Scope and ID Token</a> Data from Protected Resource:
-            <% if (resource && oidcflow.includes('g')) { %> 
-            <ul>
+        <a class="btn btn-default" href="/fetch_resource">3.4 Get Data from Protected Resource (based on Scope and ID Token)</a> Data from Protected Resource:
+        <% if (resource && oidcflow.includes('g')) { %> 
+            <ul style="background-color:#F0AD4E;color:white">
                 Data owner: <%- userInfo.name %><br>
                 Permission for <%- permission %>: 
                 Create: <% if (permission == 'government-administrator') {%> yes <% } else { %> no <% } %> / 
@@ -120,8 +120,8 @@
                 <% } %>
               </ul>
             <% } else { %>
-            <span class="label label-danger">NONE</span>
-          <% } %>      
+              <span class="label label-warning"> NONE</span> 
+          <% } %>     
       <br> 
       <br>
       <a class="btn btn-default" href="/sign_out_destroy_session">4 Sign Out & Destroy Session</a>
@@ -130,6 +130,19 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  
+  <nav class="navbar navbar-inverse navbar-fixed-bottom" style="background-color:#546E7A;">
+    <div class="container">
+      <div class="navbar-header" style="text-align:center;font-size:15px;color:white">
+        
+        <a target="_blank" class="navbar-brand"  href="https://github.com/openses/auth-openses/blob/master/client.js">Source client.js</a>
+        <a target="_blank" class="navbar-brand" href="https://github.com/openses/auth-openses/blob/master/files/client/index.html">Source index.html</a>
+        <a target="_blank" class="navbar-brand" href="https://github.com/oauthinaction/oauth-in-action-code">Original Source and Idea</a>
+        <a target="_blank" class="navbar-brand" href="mailto:claude.jacob@buerojacob.ch">claude.jacob@buerojacob.ch</a><br>
+        This app is built with the express-node.js Framework and is running in a docker container.
+      </div>
+    </div>
+  </nav>
   </body>
 </html>

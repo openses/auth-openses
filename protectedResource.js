@@ -12,6 +12,16 @@ var base64url = require('base64url');
 var jose = require('jsrsasign');
 var cors = require('cors');
 
+var serverURL;
+
+// in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
+// authorizationServer/error.html -> Zeile 32
+serverURL = 'localhost';
+// serverURL = 'auth-openses.westeurope.azurecontainer.io';
+
+var protectedResource = {
+	protectedResourceEndpoint: 'http://' + serverURL + ':9002/resource',
+};
 
 var protectedResourceApp = express();
 
@@ -229,7 +239,13 @@ var userInfoEndpoint = function(req, res) {
 	return;
 };
 
+protectedResourceApp.get('/info', function(req, res) {
+	res.render('info', {protectedResource: protectedResource});
+});
+
 protectedResourceApp.get('/userinfo', getAccessToken, requireAccessToken, userInfoEndpoint);
 protectedResourceApp.post('/userinfo', getAccessToken, requireAccessToken, userInfoEndpoint);
+
+protectedResourceApp.use('/', express.static('files/protectedResource'));
 
 module.exports = protectedResourceApp;

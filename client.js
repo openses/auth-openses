@@ -16,8 +16,7 @@ var outputClient = "";
 
 var serverURL;
 
-// in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
-// client/index.html -> Zeile 97 
+// in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
 // authorizationServer/error.html -> Zeile 32
 serverURL = 'localhost';
 // serverURL = 'auth-openses.westeurope.azurecontainer.io';
