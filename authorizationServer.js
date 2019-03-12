@@ -10,13 +10,13 @@ var __ = require('underscore');
 __.string = require('underscore.string');
 var base64url = require('base64url');
 var jose = require('jsrsasign');
+var md5 = require('md5');
 
 var serverURL;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// authorizationServer/error.html -> Zeile 32
-serverURL = 'localhost';
-// serverURL = 'auth-openses.westeurope.azurecontainer.io';
+// serverURL = 'localhost';
+serverURL = 'eidlab.innoedu.ch';
 
 var authorizationServerApp = express();
 
@@ -55,7 +55,6 @@ var rsaKey = {
 };
 
 var userInfo = {
-
 	"alice": {
 		"sub": "9XE3-JI34-00132A",
 		"preferred_username": "alice",
@@ -74,7 +73,6 @@ var userInfo = {
 		},
 		"permission": "student"
 	},
-	
 	"bob": {
 		"sub": "1ZT5-OE63-57383B",
 		"preferred_username": "bob",
@@ -88,12 +86,11 @@ var userInfo = {
 		"permission_groupe": "teacher",
 		"credentials":  {
 			"password": "Lp21:DIeuv", 
-			"salt": "salt1",
-			"hash": "0da7baa58ec080fd0b67057f97f5e7f"
+			"salt": "salt2",
+			"hash": "0da7baa58ec080fd0b67057f97f5e7f5"
 		},
 		"permission": "teacher"
 	},
-
 	"carol": {
 		"sub": "K95E-8UF1-7453C",
 		"preferred_username": "carol",
@@ -112,7 +109,6 @@ var userInfo = {
 		},
 		"permission": "school-administrator"
 	},
-
 	"dave": {
 		"sub": "G6R2-G6E1-7352D",
 		"preferred_username": "dave",
@@ -131,7 +127,6 @@ var userInfo = {
 		},
 		"permission": "government-administrator"
 	},
-
 	"mallory": {
 		"sub": "H6R3-J8Z5-5897M",
 		"preferred_username": "mallory",
@@ -150,7 +145,6 @@ var userInfo = {
 		},
 		"permission": "malicious-attacker"
 	}
-		
 };
 
 var getUser = function(username) {
@@ -163,16 +157,21 @@ var getUser = function(username) {
 // https://de.wikipedia.org/wiki/Bcrypt
 // https://www.abeautifulsite.net/hashing-passwords-with-nodejs-and-bcrypt
 // https://www.npmjs.com/package/bcrypt
+
+var getCredentials = function(username) {
+	return getUser(username).credentials;
+};
+
 var getHash = function(username) {
-	return userInfo[hash];
+	return getUser(username).credentials.hash;
 };
 
 var getSalt = function(username) {
-	return userInfo[salt];
+	return getUser(username).credentials.salt;
 };
 
 var getPassword = function(username) {
-	return userInfo[password];
+	return getUser(username).credentials.password;
 };
 
 var codes = {};
@@ -220,8 +219,8 @@ authorizationServerApp.get("/authorize", function(req, res){
 		
 		requests[reqid] = req.query;
 		
-		// res.render('approve_user_pw', {client: client, reqid: reqid, scope: rscope});
-		res.render('approve', {client: client, reqid: reqid, scope: rscope});
+		res.render('approve_user_pw', {client: client, reqid: reqid, scope: rscope});
+		// res.render('approve', {client: client, reqid: reqid, scope: rscope});
 		return;
 	}
 
@@ -238,6 +237,31 @@ authorizationServerApp.post('/approve', function(req, res) {
 		res.render('error', {error: 'No matching authorization request'});
 		return;
 	}
+
+	console.log('input user: ', req.body.user );
+	console.log('getUser: ', getUser(req.body.user));
+	
+	if (!getUser(req.body.user)){
+		var urlParsed = buildUrl(query.redirect_uri, {
+			error: 'user not found'
+		});
+		res.redirect(urlParsed);
+		return;	
+	}
+	console.log('getHash: ', getHash(req.body.user));
+	console.log('getSalt: ', getSalt(req.body.user));
+	console.log('built hash: ', md5(req.body.password + getSalt(req.body.user)));
+
+	if (md5(req.body.password + getSalt(req.body.user)) != getHash(req.body.user)){
+		var urlParsed = buildUrl(query.redirect_uri, {
+			error: "password doesn't match"
+		});
+		res.redirect(urlParsed);
+		return;	
+	}
+
+
+	
 	
 	if (req.body.approve) {
 		if (query.response_type == 'code') {
@@ -245,6 +269,8 @@ authorizationServerApp.post('/approve', function(req, res) {
 			var code = randomstring.generate(8);
 			
 			var user = getUser(req.body.user);
+
+			
 
 			var scope = getScopesFromForm(req.body);
 
@@ -258,6 +284,9 @@ authorizationServerApp.post('/approve', function(req, res) {
 				res.redirect(urlParsed);
 				return;
 			}
+
+
+			
 
 			// save the code and request for later
 			codes[code] = { request: query, scope: scope, user: user };

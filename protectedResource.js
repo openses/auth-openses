@@ -15,12 +15,12 @@ var cors = require('cors');
 var serverURL;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// authorizationServer/error.html -> Zeile 32
-serverURL = 'localhost';
-// serverURL = 'auth-openses.westeurope.azurecontainer.io';
+// serverURL = 'localhost';
+serverURL = 'eidlab.innoedu.ch';
 
 var protectedResource = {
 	protectedResourceEndpoint: 'http://' + serverURL + ':9002/resource',
+	userInfoEndpoint: 'http://' + serverURL + ':9002/userinfo'
 };
 
 var protectedResourceApp = express();

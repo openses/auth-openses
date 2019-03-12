@@ -42,7 +42,7 @@
       <div class="jumbotron">
       <p>This page represents the  <span class="label label-primary">Client/Relying Party</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
       <br>
-      <a class="btn btn-default" href="/authorize">1 Go to Authorization Server: Sign In and Approve this Client and Scope & Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
+      <a class="btn btn-default" href="/authorize">1 Go to Authorization Server: Sign In => Approve this Client and Scope => Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
       <br>
       <a class="btn btn-default" href="/get_access_token">2.1 Get Access (Refresh) Token and Scope from Authorization Server</a>
         Access Token: <span class="label label-danger"><%- (access_token && oidcflow.includes('b')) ? access_token : 'NONE' %></span>
@@ -50,15 +50,13 @@
         Scope: <span class="label label-danger"><%- (scope && oidcflow.includes('b')) ? scope : 'NONE' %></span><br><br>
       <a class="btn btn-default" href="/fetch_resource_with_access_token">2.2 Get Data from Protected Resource without UserID</a> 
       Data from Protected Resource:
-      <span class="label label-danger">
+      <span class="label label-warning">
  
           <% if (resource_with_access_token && oidcflow.includes('x')) { %> 
             Data: <%- JSON.stringify(resource_with_access_token, null, 4) %>
         <% } else { %>
         NONE
       <% } %>
-
-
       </span><br>
       <br>
       <a class="btn btn-default" href="/get_id_token">3.1 Get ID Token from Authorization Server</a>
@@ -121,10 +119,16 @@
               </ul>
             <% } else { %>
               <span class="label label-warning"> NONE</span> 
-          <% } %>     
+          <% } %>
       <br> 
       <br>
-      <a class="btn btn-default" href="/sign_out_destroy_session">4 Sign Out & Destroy Session</a>
+      <!-- *This feature will be implemented later in a new Client HTML View. -->
+      <a class="btn btn-default" href="/sign_out_destroy_session">4 Register new Client/Relying Party*</a><br>
+      *This feature will be implemented later in a new Client HTML View.<br>
+      Note: You can view all registered Clients in the Authorization Server.      
+      <br> 
+      <br>
+      <a class="btn btn-default" href="/sign_out_destroy_session">5 Sign Out and Destroy Session</a>
       </div>
     </div><!-- /.container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
