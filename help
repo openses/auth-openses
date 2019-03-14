@@ -5,14 +5,16 @@ docker network ls
 docker run --network=host -it -p 3000 -p 443 -p 80 -p 9000 -p 9001 -p 9002 auth-openses:latest
 CMD [ "npm", "start"]
 CMD ./my_wrapper_script.sh
+
 eidlab.innoedu.ch -> localhost
-52.236.148.108
+
+docker push buerojacob.azurecr.io/auth-openses:latest
 az container create --resource-group openses --name authopensescontainerv1 --image buerojacob.azurecr.io/auth-openses:latest 
 --ports 443 3000 9000 9001 9002 --dns-name-label auth-openses --cpu 1 --memory 1
-docker push buerojacob.azurecr.io/auth-openses:latest
 
 
-52.236.157.10
+
+52.157.238.216
 auth-openses.westeurope.azurecontainer.io
 ns1-01.azure-dns.com.
 ns2-01.azure-dns.net.

@@ -17,6 +17,7 @@ var outputClient = "";
 var serverURL;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
+// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "http://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
 // serverURL = 'localhost';
 serverURL = 'eidlab.innoedu.ch';
 
@@ -266,6 +267,40 @@ clientApp.get("/callback_code", function(req, res){
 	req.session.render_code = code;
 	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 	return;
+});
+
+clientApp.get("/callback_facebook_token", function(req, res){
+	var code = req.query.code;
+	var access_token = req.query.access_token;
+	req.session.facebook_access_token = access_token;
+	console.log("access_token", access_token);
+	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
+});
+
+
+clientApp.get("/get_fb_userInfo", function(req, res){
+	var userInfo = request('GET', 'https://graph.facebook.com/me?fields=id,name,email&access_token=' + req.session.facebook_access_token,
+	req.body
+	);
+	req.session.facebook_userInfo = userInfo.body.toString('utf8');
+	console.log("serInfo.body.toString('utf8')", req.session.facebook_userInfo); 
+	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
+});
+
+clientApp.get("/fetch_resource_fb", function(req, res){
+	// this is only fake, it should be a request to protectedResource.js
+	var userInfoJSON = JSON.parse(req.session.facebook_userInfo);
+	console.log("userInfoJSON", userInfoJSON);
+	var resourseDataBasedOnFacebookID = 'Resource Data.... ( Resource Owner: ' + userInfoJSON.name + ')';
+	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: '{ id: ' + userInfoJSON.id + ' ,name: ' + userInfoJSON.name + ' ,email: '+userInfoJSON.email+'}',  data: resourseDataBasedOnFacebookID});
+});
+
+clientApp.get("/sign_in_with_google_under_construction", function(req, res){
+	res.render('google');
+});
+
+clientApp.get("/sign_in_with_oidc_under_construction", function(req, res){
+	res.render('oidc');
 });
 
 clientApp.get("/get_tokens", function(req, res){

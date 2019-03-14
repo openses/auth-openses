@@ -41,8 +41,12 @@
 
       <div class="jumbotron">
       <p>This page represents the  <span class="label label-primary">Client/Relying Party</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
-      <br>
-      <a class="btn btn-default" href="/authorize">1 Go to Authorization Server: Sign In => Approve this Client and Scope => Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
+      <hr>
+      <a class="btn btn-default" href="https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=token&redirect_uri=https://buerojacob.ch/fb_cb/fb_cb.html&state='123'"><img src="sign_in_with_facebook.png" alt="Sign In with Facebook"></a>
+      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="/sign_in_with_google_under_construction"><img src="sign_in_with_google.png" alt="Sign In with Google"></a>
+      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="/sign_in_with_oidc_under_construction"><img src="sign_in_with_openid.png" alt="Sign In with OpenId"></a>
+      <hr>
+      <a class="btn btn-default" href="/authorize">1 Sign In with the eIdLab Authorization Server => Approve this Client and Scope => Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
       <br>
       <a class="btn btn-default" href="/get_access_token">2.1 Get Access (Refresh) Token and Scope from Authorization Server</a>
         Access Token: <span class="label label-danger"><%- (access_token && oidcflow.includes('b')) ? access_token : 'NONE' %></span>

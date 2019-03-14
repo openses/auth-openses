@@ -15,6 +15,7 @@ var cors = require('cors');
 var serverURL;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
+// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "http://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
 // serverURL = 'localhost';
 serverURL = 'eidlab.innoedu.ch';
 
