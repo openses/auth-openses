@@ -99,6 +99,10 @@ clientApp.get('/authorize', function(req, res){
 	res.redirect(authorizeUrl);
 });
 
+clientApp.get('/oidcdemoauth', function(req, res){
+	//post redirect nach  http://auth-openses.westeurope.azurecontainer.io:3000/oidc/auth
+});	
+
 clientApp.get("/callback", function(req, res){
 
 	if (req.query.error) {

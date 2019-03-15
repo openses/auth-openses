@@ -22,3 +22,33 @@ ns3-01.azure-dns.org.
 ns4-01.azure-dns.info.
 New-AzDnsRecordSet -ZoneName innoedu.ch -ResourceGroupName "openses" -Name "www" -RecordType "CNAME" -Ttl 600 -DnsRecords (New-AzDnsRecordConfig -cname "auth-openses.westeurope.azurecontainer.io")
 New-AzDnsRecordSet -ZoneName innoedu.ch -ResourceGroupName "openses" -Name "eidlab" -RecordType "CNAME" -Ttl 600 -DnsRecords (New-AzDnsRecordConfig -cname "auth-openses.westeurope.azurecontainer.io")
+
+
+http://localhost:3000/oidc/auth
+
+
+client_id: 'code',
+    client_secret: 'client_secret',
+    grant_types: ['authorization_code'],
+    response_types: ['code'],
+    redirect_uris: ['https://oidcdebugger.com/debug'],
+    token_endpoint_auth_method: 'none'},
+http://localhost:3000/oidc/auth?client_id=code&redirect_uri=https%3A%2F%2Foidcdebugger.com%2Fdebug&scope=openid&response_type=code&response_mode=fragment&state=123&nonce=73qgtsjbqkn
+
+
+{client_id: 'token',
+    client_secret: 'client_secret',
+    grant_types: ['implicit'],
+    response_types: ['token'],
+    redirect_uris: ['https://oidcdebugger.com/debug'],
+    token_endpoint_auth_method: 'none'},
+http://localhost:3000/oidc/auth?client_id=token&redirect_uri=https%3A%2F%2Foidcdebugger.com%2Fdebug&scope=openid&response_type=token&response_mode=fragment&state=123&nonce=8xyt8lklir8
+
+    {client_id: 'id_token',
+    client_secret: 'client_secret',
+    grant_types: ['implicit'],
+    response_types: ['id_token'],
+    redirect_uris: ['https://oidcdebugger.com/debug'],
+    token_endpoint_auth_method: 'none'},
+http://localhost:3000/oidc/auth?client_id=id_token&redirect_uri=https%3A%2F%2Foidcdebugger.com%2Fdebug&scope=openid%20profile&response_type=id_token&response_mode=fragment&state=123&nonce=smfijj19hu
+
