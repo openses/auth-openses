@@ -15,9 +15,9 @@ var md5 = require('md5');
 var serverURL;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "http://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
+// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "https://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
 // serverURL = 'localhost';
-serverURL = 'eidlab.innoedu.ch';
+serverURL = 'www.innoedu.ch';
 
 var authorizationServerApp = express();
 
@@ -31,8 +31,8 @@ authorizationServerApp.set('json spaces', 4);
 
 // authorization server information
 var authServer = {
-	authorizationEndpoint: 'http://' + serverURL + ':9001/authorize',
-	tokenEndpoint: 'http://' + serverURL + ':9001/token'
+	authorizationEndpoint: 'https://' + serverURL + ':9001/authorize',
+	tokenEndpoint: 'https://' + serverURL + ':9001/token'
 };
 
 // client information
@@ -40,8 +40,8 @@ var clients = [
 	{
 		"client_id": "oauth-client-1",
 		"client_secret": "oauth-client-secret-1",
-		// "redirect_uris": ["http://" + serverURL + ":9000/callback"],
-		"redirect_uris": ["http://" + serverURL + ":9000/callback_code"],
+		// "redirect_uris": ["https://" + serverURL + ":9000/callback"],
+		"redirect_uris": ["https://" + serverURL + ":9000/callback_code"],
 		"scope": "openid profile email permission credentials "
 	}
 ];
@@ -378,7 +378,7 @@ authorizationServerApp.post("/token", function(req, res){
 					var header = { 'typ': 'JWT', 'alg': rsaKey.alg, 'kid': rsaKey.kid };
 
 					var ipayload = {
-						iss: 'http://' + serverURL + ':9001/',
+						iss: 'https://' + serverURL + ':9001/',
 						sub: code.user.sub,
 						aud: client.client_id,
 						iat: Math.floor(Date.now() / 1000),

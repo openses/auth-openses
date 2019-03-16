@@ -32,6 +32,9 @@ var routesApi = require('./api/routes/index');
 
 var app = express();
 
+// für 
+app.use(express.static('static'));
+
   
 
 // view engine setup

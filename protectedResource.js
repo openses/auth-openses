@@ -15,13 +15,13 @@ var cors = require('cors');
 var serverURL;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "http://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
+// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "https://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
 // serverURL = 'localhost';
-serverURL = 'eidlab.innoedu.ch';
+serverURL = 'www.innoedu.ch';
 
 var protectedResource = {
-	protectedResourceEndpoint: 'http://' + serverURL + ':9002/resource',
-	userInfoEndpoint: 'http://' + serverURL + ':9002/userinfo'
+	protectedResourceEndpoint: 'https://' + serverURL + ':9002/resource',
+	userInfoEndpoint: 'https://' + serverURL + ':9002/userinfo'
 };
 
 var protectedResourceApp = express();

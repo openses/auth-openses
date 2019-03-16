@@ -13,13 +13,19 @@ var __ = require('underscore');
 __.string = require('underscore.string');
 const http = require('http');
 var outputClient = "";
+const https = require('https'), fs = require('fs') /* , helmet = require('helmet') */ ;
+
+const credentials = {
+  key: fs.readFileSync('./bin/privkey.pem', 'utf8'),
+  cert: fs.readFileSync('./bin/fullchain.pem', 'utf8'),
+  };
 
 var serverURL;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "http://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
+// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "https://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
 // serverURL = 'localhost';
-serverURL = 'eidlab.innoedu.ch';
+serverURL = 'www.innoedu.ch';
 
 
 
@@ -40,16 +46,16 @@ clientApp.set('views', 'files/client');
 var client = {
 	"client_id": "oauth-client-1",
 	"client_secret": "oauth-client-secret-1",
-	// "redirect_uris": ["http://" + serverURL + ":9000/callback"],
-	"redirect_uris": ["http://" + serverURL + ":9000/callback_code"],
+	// "redirect_uris": ["https://" + serverURL + ":9000/callback"],
+	"redirect_uris": ["https://" + serverURL + ":9000/callback_code"],
 	"scope": "openid profile email permission credentials"
 };
 
 // authorization server information
 var authServer = {
-	authorizationEndpoint: 'http://' + serverURL + ':9001/authorize',
-	tokenEndpoint: 'http://' + serverURL + ':9001/token',
-	userInfoEndpoint: 'http://' + serverURL + ':9002/userinfo'
+	authorizationEndpoint: 'https://' + serverURL + ':9001/authorize',
+	tokenEndpoint: 'https://' + serverURL + ':9001/token',
+	userInfoEndpoint: 'https://' + serverURL + ':9002/userinfo'
 };
 
 var rsaKey = {
@@ -60,7 +66,7 @@ var rsaKey = {
   "kid": "authserver"
 };
 
-var protectedResource = 'http://' + serverURL + ':9002/resource';
+var protectedResource = 'https://' + serverURL + ':9002/resource';
 
 var state = null;
 
@@ -192,7 +198,7 @@ clientApp.get("/callback", function(req, res){
 			console.log('Payload', payload);
 			if (jose.jws.JWS.verify(body.id_token, pubKey, [rsaKey.alg])) {
 				console.log('Signature validated.');
-				if (payload.iss == 'http://' + serverURL + ':9001/') {
+				if (payload.iss == 'https://' + serverURL + ':9001/') {
 					console.log('issuer OK');
 					if ((Array.isArray(payload.aud) && __.contains(payload.aud, client.client_id)) || 
 						payload.aud == client.client_id) {
@@ -274,6 +280,20 @@ clientApp.get("/callback_code", function(req, res){
 });
 
 clientApp.get("/callback_facebook_token", function(req, res){
+/* var url = window.location.href;
+var querystring = url.split("?");
+var querystring_trim = querystring[1].substr( querystring[1].length -(querystring[1].length-1));
+// window.location.href = "http://localhost:9000/callback_facebook_token?" + querystring_trim;
+window.location.href = "https://www.innoedu.ch:9000/callback_facebook_token_1?" + querystring_trim; */
+var code = req.query.code;
+	var access_token = req.query.access_token;
+	req.session.facebook_access_token = access_token;
+	console.log("access_token", access_token);
+	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
+});
+
+
+clientApp.get("/callback_facebook_token_1", function(req, res){
 	var code = req.query.code;
 	var access_token = req.query.access_token;
 	req.session.facebook_access_token = access_token;
@@ -392,7 +412,7 @@ clientApp.get("/get_tokens", function(req, res){
 			console.log('Payload', payload);
 			if (jose.jws.JWS.verify(body.id_token, pubKey, [rsaKey.alg])) {
 				console.log('Signature validated.');
-				if (payload.iss == 'http://' + serverURL + ':9001/') {
+				if (payload.iss == 'https://' + serverURL + ':9001/') {
 					console.log('issuer OK');
 					if ((Array.isArray(payload.aud) && __.contains(payload.aud, client.client_id)) || 
 						payload.aud == client.client_id) {
@@ -612,7 +632,7 @@ clientApp.get("/get_id_token", function(req, res){
 			console.log('Payload', payload);
 			if (jose.jws.JWS.verify(body.id_token, pubKey, [rsaKey.alg])) {
 				console.log('Signature validated.');
-				if (payload.iss == 'http://' + serverURL + ':9001/') {
+				if (payload.iss == 'https://' + serverURL + ':9001/') {
 					console.log('issuer OK');
 					if ((Array.isArray(payload.aud) && __.contains(payload.aud, client.client_id)) || 
 						payload.aud == client.client_id) {
@@ -780,9 +800,9 @@ var encodeClientCredentials = function(clientId, clientSecret) {
 	return new Buffer(querystring.escape(clientId) + ':' + querystring.escape(clientSecret)).toString('base64');
 };
 
-const clientHttpServer = http.createServer(clientApp);
+const clientHttpsServer = https.createServer(credentials, clientApp);
 
-clientHttpServer.listen(9000, () => {
+clientHttpsServer.listen(9000, () => {
 	console.log('client Http Server running on port 9000');
 });
 
