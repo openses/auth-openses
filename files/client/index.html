@@ -42,10 +42,15 @@
       <div class="jumbotron">
       <p>This page represents the  <span class="label label-primary">Client/Relying Party</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
       <hr>
-      <a class="btn btn-default" href="https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=token&redirect_uri=https://buerojacob.ch/fb_cb/fb_cb.html&state='123'"><img src="sign_in_with_facebook.png" alt="Sign In with Facebook"></a>
+      Preparation:
+      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="/sign_out_destroy_session">Clean Tokens and Destroy Sessions</a>
+      <hr>
+      Social Logins: 
+      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=code&response_mode=query&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"><img src="sign_in_with_facebook.png" alt="Sign In with Facebook"></a>
       &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="/sign_in_with_google_under_construction"><img src="sign_in_with_google.png" alt="Sign In with Google"></a>
       &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="/sign_in_with_oidc_under_construction"><img src="sign_in_with_openid.png" alt="Sign In with OpenId"></a>
       <hr>
+      Interactive <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> Login Flow:<br><br>
       <a class="btn btn-default" href="/authorize">1 Sign In with the eIdLab Authorization Server => Approve this Client and Scope => Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
       <br>
       <a class="btn btn-default" href="/get_access_token">2.1 Get Access (Refresh) Token and Scope from Authorization Server</a>
@@ -129,10 +134,7 @@
       <!-- *This feature will be implemented later in a new Client HTML View. -->
       <a class="btn btn-default" href="/sign_out_destroy_session">4 Register new Client/Relying Party*</a><br>
       *This feature will be implemented later in a new Client HTML View.<br>
-      Note: You can view all registered Clients in the Authorization Server.      
-      <br> 
-      <br>
-      <a class="btn btn-default" href="/sign_out_destroy_session">5 Sign Out and Destroy Session</a>
+      Note: You can view all registered Clients in the Authorization Server.
       </div>
     </div><!-- /.container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

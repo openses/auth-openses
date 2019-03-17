@@ -13,11 +13,26 @@ var jose = require('jsrsasign');
 var md5 = require('md5');
 
 var serverURL;
+var http_or_https;
+var port_9000_or_9010;
+var port_9001_or_9011;
+var port_9002_or_9012;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "https://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
-// serverURL = 'localhost';
+// in files/client/index.html Zeile 45 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
+// in files/client/index.html Zeile 45 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
+
 serverURL = 'www.innoedu.ch';
+http_or_https = 'https://';
+var port_9000_or_9010 = ':9000';
+var port_9001_or_9011 = ':9001';
+var port_9002_or_9012 = ':9002'; 
+
+/*  serverURL = 'localhost';
+http_or_https = 'http://';
+var port_9000_or_9010 = ':9010';
+var port_9001_or_9011 = ':9011';
+var port_9002_or_9012 = ':9012'; */
 
 var authorizationServerApp = express();
 
@@ -31,8 +46,8 @@ authorizationServerApp.set('json spaces', 4);
 
 // authorization server information
 var authServer = {
-	authorizationEndpoint: 'https://' + serverURL + ':9001/authorize',
-	tokenEndpoint: 'https://' + serverURL + ':9001/token'
+	authorizationEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/authorize',
+	tokenEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/token'
 };
 
 // client information
@@ -41,7 +56,7 @@ var clients = [
 		"client_id": "oauth-client-1",
 		"client_secret": "oauth-client-secret-1",
 		// "redirect_uris": ["https://" + serverURL + ":9000/callback"],
-		"redirect_uris": ["https://" + serverURL + ":9000/callback_code"],
+		"redirect_uris": [http_or_https + serverURL + port_9000_or_9010 +"/callback_code"],
 		"scope": "openid profile email permission credentials "
 	}
 ];
@@ -378,7 +393,7 @@ authorizationServerApp.post("/token", function(req, res){
 					var header = { 'typ': 'JWT', 'alg': rsaKey.alg, 'kid': rsaKey.kid };
 
 					var ipayload = {
-						iss: 'https://' + serverURL + ':9001/',
+						iss: http_or_https + serverURL + port_9001_or_9011 +'/',
 						sub: code.user.sub,
 						aud: client.client_id,
 						iat: Math.floor(Date.now() / 1000),

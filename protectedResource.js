@@ -13,15 +13,30 @@ var jose = require('jsrsasign');
 var cors = require('cors');
 
 var serverURL;
+var http_or_https;
+var port_9000_or_9010;
+var port_9001_or_9011;
+var port_9002_or_9012;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "https://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
-// serverURL = 'localhost';
+// in files/client/index.html Zeile 45 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
+// in files/client/index.html Zeile 45 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
+
 serverURL = 'www.innoedu.ch';
+http_or_https = 'https://';
+var port_9000_or_9010 = ':9000';
+var port_9001_or_9011 = ':9001';
+var port_9002_or_9012 = ':9002';
+
+/* serverURL = 'localhost';
+http_or_https = 'http://';
+var port_9000_or_9010 = ':9010';
+var port_9001_or_9011 = ':9011';
+var port_9002_or_9012 = ':9012'; */
 
 var protectedResource = {
-	protectedResourceEndpoint: 'https://' + serverURL + ':9002/resource',
-	userInfoEndpoint: 'https://' + serverURL + ':9002/userinfo'
+	protectedResourceEndpoint: http_or_https + serverURL + port_9002_or_9012 +'/resource',
+	userInfoEndpoint: http_or_https + serverURL + port_9002_or_9012 +'/userinfo'
 };
 
 var protectedResourceApp = express();

@@ -21,18 +21,32 @@ const credentials = {
   };
 
 var serverURL;
+var http_or_https;
+var port_9000_or_9010;
+var port_9001_or_9011;
+var port_9002_or_9012;
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// in https://buerojacob.ch/fb_cb/fb_cb.html Zeile 21 -> window.location.href = "https://eidlab.innoedu.ch:9000/callback_facebook_token?" + querystring_trim;
-// serverURL = 'localhost';
+// in files/client/index.html Zeile 45 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
+// in files/client/index.html Zeile 45 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
+// in Zeile 300 client.js var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://localhost:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
+// in Zeile 300 var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
+
 serverURL = 'www.innoedu.ch';
+http_or_https = 'https://';
+var port_9000_or_9010 = ':9000';
+var port_9001_or_9011 = ':9001';
+var port_9002_or_9012 = ':9002';
 
-
+/* serverURL = 'localhost';
+http_or_https = 'http://';
+var port_9000_or_9010 = ':9010';
+var port_9001_or_9011 = ':9011';
+var port_9002_or_9012 = ':9012'; */
 
 var clientApp = express();
 
 clientApp.use(session({secret: "xcerats24srw"}));
-
 
 clientApp.use(bodyParser.json());
 clientApp.use(bodyParser.urlencoded({ extended: true }));
@@ -47,15 +61,15 @@ var client = {
 	"client_id": "oauth-client-1",
 	"client_secret": "oauth-client-secret-1",
 	// "redirect_uris": ["https://" + serverURL + ":9000/callback"],
-	"redirect_uris": ["https://" + serverURL + ":9000/callback_code"],
+	"redirect_uris": [http_or_https + serverURL + port_9000_or_9010 + "/callback_code"],
 	"scope": "openid profile email permission credentials"
 };
 
 // authorization server information
 var authServer = {
-	authorizationEndpoint: 'https://' + serverURL + ':9001/authorize',
-	tokenEndpoint: 'https://' + serverURL + ':9001/token',
-	userInfoEndpoint: 'https://' + serverURL + ':9002/userinfo'
+	authorizationEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/authorize',
+	tokenEndpoint: http_or_https + serverURL + port_9001_or_9011 + '/token',
+	userInfoEndpoint: http_or_https + serverURL + port_9002_or_9012 +'/userinfo'
 };
 
 var rsaKey = {
@@ -66,7 +80,7 @@ var rsaKey = {
   "kid": "authserver"
 };
 
-var protectedResource = 'https://' + serverURL + ':9002/resource';
+var protectedResource = http_or_https + serverURL + port_9002_or_9012 + '/resource';
 
 var state = null;
 
@@ -198,7 +212,7 @@ clientApp.get("/callback", function(req, res){
 			console.log('Payload', payload);
 			if (jose.jws.JWS.verify(body.id_token, pubKey, [rsaKey.alg])) {
 				console.log('Signature validated.');
-				if (payload.iss == 'https://' + serverURL + ':9001/') {
+				if (payload.iss == http_or_https + serverURL + port_9001_or_9011 +'/') {
 					console.log('issuer OK');
 					if ((Array.isArray(payload.aud) && __.contains(payload.aud, client.client_id)) || 
 						payload.aud == client.client_id) {
@@ -280,21 +294,51 @@ clientApp.get("/callback_code", function(req, res){
 });
 
 clientApp.get("/callback_facebook_token", function(req, res){
-/* var url = window.location.href;
-var querystring = url.split("?");
-var querystring_trim = querystring[1].substr( querystring[1].length -(querystring[1].length-1));
-// window.location.href = "http://localhost:9000/callback_facebook_token?" + querystring_trim;
-window.location.href = "https://www.innoedu.ch:9000/callback_facebook_token_1?" + querystring_trim; */
-var code = req.query.code;
-	var access_token = req.query.access_token;
-	req.session.facebook_access_token = access_token;
-	console.log("access_token", access_token);
+	var code = req.query.code;
+	console.log('code : ',  code)
+	req.session.code = code;
+	var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
+	req.body
+	);
+	console.log("token.req.body", token.body);
+	req.session.facebook_access_token = token.body.toString('utf8');
+	req.session.facebook_access_token = JSON.parse(token.body);
+	req.session.facebook_access_token = req.session.facebook_access_token.access_token;
+	console.log("req.session.facebook_access_token.toString('utf8')", req.session.facebook_access_token); 
 	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
+
+	/* req.session.facebook_access_token = token.body.toString('utf8');
+	console.log("serInfo.body.toString('utf8')", req.session.facebook_userInfo); 
+	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
+ */
+
+	/* var tokRes = request('POST', authServer.tokenEndpoint, 
+		{	
+			body: form_data,
+			headers: headers
+		}
+	);
+	 */
+	/* const url = require('url')
+	const urlTest = req.url;
+	console.log('urlhref: ',  urlTest.href)
+	console.log('req.query: ',  req.query)
+	const urlObj = url.parse(req.url, true)
+	console.log(urlObj.search) 
+	res.send('/callback_facebook_token_1?' + urlObj.search) */
+	// var access_token = req.query.access_token;
+
+	/* req.session.facebook_access_token = access_token;
+	console.log("access_token", access_token);
+	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null }); */
 });
 
 
+
+
+
 clientApp.get("/callback_facebook_token_1", function(req, res){
-	var code = req.query.code;
+	// var code = req.query.code;
 	var access_token = req.query.access_token;
 	req.session.facebook_access_token = access_token;
 	console.log("access_token", access_token);
@@ -412,7 +456,7 @@ clientApp.get("/get_tokens", function(req, res){
 			console.log('Payload', payload);
 			if (jose.jws.JWS.verify(body.id_token, pubKey, [rsaKey.alg])) {
 				console.log('Signature validated.');
-				if (payload.iss == 'https://' + serverURL + ':9001/') {
+				if (payload.iss == http_or_https + serverURL + port_9001_or_9011 + '/') {
 					console.log('issuer OK');
 					if ((Array.isArray(payload.aud) && __.contains(payload.aud, client.client_id)) || 
 						payload.aud == client.client_id) {
@@ -632,7 +676,7 @@ clientApp.get("/get_id_token", function(req, res){
 			console.log('Payload', payload);
 			if (jose.jws.JWS.verify(body.id_token, pubKey, [rsaKey.alg])) {
 				console.log('Signature validated.');
-				if (payload.iss == 'https://' + serverURL + ':9001/') {
+				if (payload.iss == http_or_https + serverURL + port_9001_or_9011 +'/') {
 					console.log('issuer OK');
 					if ((Array.isArray(payload.aud) && __.contains(payload.aud, client.client_id)) || 
 						payload.aud == client.client_id) {
@@ -800,10 +844,15 @@ var encodeClientCredentials = function(clientId, clientSecret) {
 	return new Buffer(querystring.escape(clientId) + ':' + querystring.escape(clientSecret)).toString('base64');
 };
 
+const clientHttpServer = http.createServer(clientApp);
 const clientHttpsServer = https.createServer(credentials, clientApp);
 
 clientHttpsServer.listen(9000, () => {
-	console.log('client Http Server running on port 9000');
+	console.log('client Https Server running on port 9000');
+});
+
+clientHttpServer.listen(9010, () => {
+	console.log('client Http Server running on port 9010');
 });
 
 /* var server = clientApp.listen(9000, serverURL  , function () {
