@@ -29,20 +29,20 @@ var port_9002_or_9012;
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
 // in files/client/index.html Zeile 45 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
 // in files/client/index.html Zeile 45 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
-// in Zeile 300 client.js var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://localhost:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
-// in Zeile 300 var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
+// in client.js Zeile 300  var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://localhost:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
+// in client.jsZeile 300 var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
 
-serverURL = 'www.innoedu.ch';
+/* serverURL = 'www.innoedu.ch';
 http_or_https = 'https://';
 var port_9000_or_9010 = ':9000';
 var port_9001_or_9011 = ':9001';
-var port_9002_or_9012 = ':9002';
+var port_9002_or_9012 = ':9002'; */
 
-/* serverURL = 'localhost';
+serverURL = 'localhost';
 http_or_https = 'http://';
 var port_9000_or_9010 = ':9010';
 var port_9001_or_9011 = ':9011';
-var port_9002_or_9012 = ':9012'; */
+var port_9002_or_9012 = ':9012';
 
 var clientApp = express();
 
@@ -293,11 +293,16 @@ clientApp.get("/callback_code", function(req, res){
 	return;
 });
 
+clientApp.get("/callback_facebook_code", function(req, res){
+	var facebook_oauth =request("GET", "https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=code&response_mode=query&redirect_uri=https://localhost:9000/callback_facebook_token&state='123'");
+});
+
 clientApp.get("/callback_facebook_token", function(req, res){
 	var code = req.query.code;
 	console.log('code : ',  code)
 	req.session.code = code;
-	var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
+	// var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
+	var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://localhost:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
 	req.body
 	);
 	console.log("token.req.body", token.body);
@@ -305,45 +310,30 @@ clientApp.get("/callback_facebook_token", function(req, res){
 	req.session.facebook_access_token = JSON.parse(token.body);
 	req.session.facebook_access_token = req.session.facebook_access_token.access_token;
 	console.log("req.session.facebook_access_token.toString('utf8')", req.session.facebook_access_token); 
-	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
-
-	/* req.session.facebook_access_token = token.body.toString('utf8');
-	console.log("serInfo.body.toString('utf8')", req.session.facebook_userInfo); 
-	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
- */
-
-	/* var tokRes = request('POST', authServer.tokenEndpoint, 
-		{	
-			body: form_data,
-			headers: headers
-		}
+	// res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
+	var userInfo = request('GET', 'https://graph.facebook.com/me?fields=id,name,email&access_token=' + req.session.facebook_access_token,
+	req.body
 	);
-	 */
-	/* const url = require('url')
-	const urlTest = req.url;
-	console.log('urlhref: ',  urlTest.href)
-	console.log('req.query: ',  req.query)
-	const urlObj = url.parse(req.url, true)
-	console.log(urlObj.search) 
-	res.send('/callback_facebook_token_1?' + urlObj.search) */
-	// var access_token = req.query.access_token;
-
-	/* req.session.facebook_access_token = access_token;
-	console.log("access_token", access_token);
-	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null }); */
+	req.session.facebook_userInfo = userInfo.body.toString('utf8');
+	console.log("serInfo.body.toString('utf8')", req.session.facebook_userInfo);
+	var fb_name = JSON.parse(req.session.facebook_userInfo);
+	fb_name = fb_name.name; 
+	console.log("serInfo.body.toString('utf8')", fb_name);
+	res.render('facebook_continue', {fb_name: fb_name});
 });
 
 
+clientApp.get("/callback_facebook_continue", function(req, res){
+	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
+});
 
-
-
-clientApp.get("/callback_facebook_token_1", function(req, res){
+/* clientApp.get("/callback_facebook_token_1", function(req, res){
 	// var code = req.query.code;
 	var access_token = req.query.access_token;
 	req.session.facebook_access_token = access_token;
 	console.log("access_token", access_token);
 	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
-});
+}); */
 
 
 clientApp.get("/get_fb_userInfo", function(req, res){

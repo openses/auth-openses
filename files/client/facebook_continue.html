@@ -39,18 +39,9 @@
     <div class="container">
 
       <div class="jumbotron">
-          <p>This page represents the <a target="_blank"  href="https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow"><span class="label label-info">Facebook Login Flow for WebApps</span></a>  of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p></p>
-          <hr>
-         Facebook access_token: <span class="label label-danger"><%= (access_token) ? access_token : 'None'%></span><br>
-         <br>
-         <!-- <a class="btn btn-default" href="/get_fb_userInfo">Verify the Access Token and get User Information from Facebook</a><br> -->
-         User Information from Facebook:<br>
-         <span class="label label-danger"><%= (facebook_userInfo) ? facebook_userInfo : 'None'%></span><br>
-         <br>
-        <a class="btn btn-default" href="/fetch_resource_fb">Get Data from the Protected Resource (Based on Facebook UserID)</a><br> 
-        Data from the Protected Resource:<br>
-        <span class="label label-danger"><%= (data) ? data : 'None'%></span><br>
-        <br>
+          <br>
+         <a class="btn btn-default" href="/callback_facebook_continue">Continue with <%- (fb_name) %></a><br>
+         
       </div>
     </div><!-- /.container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
