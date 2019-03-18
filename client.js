@@ -306,35 +306,37 @@ clientApp.get("/callback_facebook_token", function(req, res){
 	req.body
 	);
 	console.log("token.req.body", token.body);
-	req.session.facebook_access_token = token.body.toString('utf8');
+	// req.session.facebook_access_token = token.body.toString('utf8');
 	req.session.facebook_access_token = JSON.parse(token.body);
 	req.session.facebook_access_token = req.session.facebook_access_token.access_token;
-	console.log("req.session.facebook_access_token.toString('utf8')", req.session.facebook_access_token); 
+	console.log("req.session.facebook_access_token", req.session.facebook_access_token); 
 	// res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
 	var userInfo = request('GET', 'https://graph.facebook.com/me?fields=id,name,email&access_token=' + req.session.facebook_access_token,
 	req.body
 	);
+	var json_fb_body = JSON.parse(userInfo.body)
+	var json_fb_body_name = json_fb_body.name;
 	req.session.facebook_userInfo = userInfo.body.toString('utf8');
-	console.log("serInfo.body.toString('utf8')", req.session.facebook_userInfo);
-	var fb_name = JSON.parse(req.session.facebook_userInfo);
-	fb_name = fb_name.name; 
-	console.log("serInfo.body.toString('utf8')", fb_name);
-	res.render('facebook_continue', {fb_name: fb_name});
+	req.session.facebook_userInfo = userInfo.body.toString('utf8');
+	console.log("userInfo.body", req.session.facebook_userInfo);
+	res.render('facebook_continue', {fb_name: json_fb_body_name});
 });
+
+ clientApp.post("/callback_oidc_token", function(req, res){
+	 // var body = req.body.toString('utf8');
+	 var body = req.body;
+	 console.log('body: ', body);
+	 console.log('body.code: ', body.code);
+	 console.log('body.token: ', body.access_token);
+	 console.log('body.token_id: ', body.id_token);
+	//  body = JSON.parse(body);
+	//  console.log('jsonbody: ', body);
+	 });
 
 
 clientApp.get("/callback_facebook_continue", function(req, res){
-	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
+	res.render('facebook', {code: req.session.code, access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
 });
-
-/* clientApp.get("/callback_facebook_token_1", function(req, res){
-	// var code = req.query.code;
-	var access_token = req.query.access_token;
-	req.session.facebook_access_token = access_token;
-	console.log("access_token", access_token);
-	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: req.session.facebook_userInfo, data: null });
-}); */
-
 
 clientApp.get("/get_fb_userInfo", function(req, res){
 	var userInfo = request('GET', 'https://graph.facebook.com/me?fields=id,name,email&access_token=' + req.session.facebook_access_token,
@@ -350,7 +352,7 @@ clientApp.get("/fetch_resource_fb", function(req, res){
 	var userInfoJSON = JSON.parse(req.session.facebook_userInfo);
 	console.log("userInfoJSON", userInfoJSON);
 	var resourseDataBasedOnFacebookID = 'Resource Data.... ( Resource Owner: ' + userInfoJSON.name + ')';
-	res.render('facebook', {access_token: req.session.facebook_access_token, facebook_userInfo: '{ id: ' + userInfoJSON.id + ' ,name: ' + userInfoJSON.name + ' ,email: '+userInfoJSON.email+'}',  data: resourseDataBasedOnFacebookID});
+	res.render('facebook', {code: req.session.code, access_token: req.session.facebook_access_token, facebook_userInfo: '{ id: ' + userInfoJSON.id + ' ,name: ' + userInfoJSON.name + ' ,email: '+userInfoJSON.email+'}',  data: resourseDataBasedOnFacebookID});
 });
 
 clientApp.get("/sign_in_with_google_under_construction", function(req, res){

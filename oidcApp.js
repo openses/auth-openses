@@ -13,7 +13,15 @@ const oidcApp = express();
 
 const clients = [
     // token id_token code
-    {client_id: 'test_oidcdebugger_com_token_id_token_code',
+    {client_id: 'eidlab_token_id_token_code',
+    client_secret: 'super_secret',
+    grant_types: ['authorization_code', 'implicit'],
+    response_types: ['token id_token code'],
+    redirect_uris: ['https://127.0.0.1:9000/callback_oidc_token'],
+    token_endpoint_auth_method: 'none'},
+
+
+    {client_id: 'token_id_token_code',
     client_secret: 'super_secret',
     grant_types: ['authorization_code', 'implicit'],
     response_types: ['token id_token code'],
@@ -54,6 +62,12 @@ const clients = [
     grant_types: ['authorization_code'],
     response_types: ['code'],
     redirect_uris: ['https://oidcdebugger.com/debug'],
+    token_endpoint_auth_method: 'none'},
+    {client_id: 'code_eidlab',
+    client_secret: 'client_secret',
+    grant_types: ['authorization_code'],
+    response_types: ['code'],
+    redirect_uris: ['https://localhost:9000/callback_oidc_token'],
     token_endpoint_auth_method: 'none'},
     // token
     {client_id: 'token',
