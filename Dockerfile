@@ -11,6 +11,9 @@ RUN npm install
 # Copy source
 COPY . /usr/src/app
 
+#Copy custom oidc-provider login form
+COPY login.js /usr/src/app/node_modules/oidc-provider/lib/views
+
 RUN ["chmod", "+x", "/usr/src/app/my_wrapper_script.sh"]
 
 EXPOSE 80
