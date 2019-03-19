@@ -1,13 +1,28 @@
 const express = require('express');
 const Provider = require('oidc-provider');
 
-var serverURL;
+// in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
+// in files/client/index.html Zeile 45 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
+// in files/client/index.html Zeile 45 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
+// in files/client/index.html Zeile 52 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
+// in files/client/index.html Zeile 52 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
 
-// in oidcApp.js, authorizationServer.js, client.js vor dem Hochladen anpassen
-// client/index.html -> Zeile 85 
-// authorizationServer/error.html -> Zeile 32
-// serverURL = 'localhost';
-serverURL = 'auth-openses.westeurope.azurecontainer.io';
+
+ 
+serverURL = 'www.innoedu.ch';
+ClientserverURL = 'www.innoedu.ch';
+var http_or_https = 'http://'; //https
+var port_3000_or_3010 = ':3000'; 
+
+/*
+serverURL = '127.0.0.1';
+var http_or_https = 'http://';
+var port_3000_or_3010 = ':3000'; //3010
+*/
+
+
+
+
 
 const oidcApp = express();
 
@@ -17,7 +32,7 @@ const clients = [
     client_secret: 'super_secret',
     grant_types: ['authorization_code', 'implicit'],
     response_types: ['token id_token code'],
-    redirect_uris: ['https://127.0.0.1:9000/callback_oidc_token'],
+    redirect_uris: ['https://' + serverURL + ':9000/callback_oidc_token'],
     token_endpoint_auth_method: 'none'},
 
 
@@ -93,7 +108,7 @@ const clients = [
     response_types: [],
 }];
 
-const oidc = new Provider('http://' + serverURL +':3000', {
+const oidc = new Provider(http_or_https + serverURL + port_3000_or_3010, {
     claims: {
         address: ['address'],
         email: ['email', 'email_verified'],

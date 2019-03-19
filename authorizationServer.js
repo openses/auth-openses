@@ -12,30 +12,24 @@ var base64url = require('base64url');
 var jose = require('jsrsasign');
 var md5 = require('md5');
 
-var serverURL;
-var http_or_https;
-var port_9000_or_9010;
-var port_9001_or_9011;
-var port_9002_or_9012;
-
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
 // in files/client/index.html Zeile 45 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
 // in files/client/index.html Zeile 45 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
-// in client.js Zeile 300  var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://localhost:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
-// in client.jsZeile 300 var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
+// in files/client/index.html Zeile 52 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
+// in files/client/index.html Zeile 52 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
 
-/* serverURL = 'www.innoedu.ch';
-http_or_https = 'https://';
+serverURL = 'www.innoedu.ch';
+var http_or_https = 'https://';
 var port_9000_or_9010 = ':9000';
 var port_9001_or_9011 = ':9001';
-var port_9002_or_9012 = ':9002'; */ 
-
+var port_9002_or_9012 = ':9002';
+/*
 serverURL = 'localhost';
-http_or_https = 'http://';
+var http_or_https = 'http://';
 var port_9000_or_9010 = ':9010';
 var port_9001_or_9011 = ':9011';
-var port_9002_or_9012 = ':9012';
-
+var port_9002_or_9012 = ':9012'; 
+*/
 var authorizationServerApp = express();
 
 authorizationServerApp.use(bodyParser.json());

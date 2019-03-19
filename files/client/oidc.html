@@ -39,20 +39,25 @@
     <div class="container">
 
       <div class="jumbotron">
-          <p>This page represents the OpenID Connect Login Flow for Server-side Apps  and for Single Page WebApps within the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p></p>
+          <p>This page represents the <a target="_blank"  href="https://www.heise.de/developer/artikel/OpenID-Connect-Login-mit-OAuth-Teil-1-Grundlagen-2218446.html?seite=all"><span class="label label-warning">OpenID Connect Login Flow for WebApps</span></a>  of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p></p>
           <hr>
-        <form action="/oidcdemoauth" method="post">
-          <p>Select the response_type:</p>
-          <fieldset>
-            <input type="radio" id="code" name="response_type" value="code"><label for="code">&nbsp;&nbsp;code (Server-side Apps)</label><br><br>
-            <input type="radio" id="token" name="response_type" value="token"><label for="token">&nbsp;&nbsp;token (Single Page WebApps)</label><br><br>
-            <input type="radio" id="id_token" name="response_type" value="id_token"><label for="id_token">&nbsp;&nbsp;id_token (Single Page WebApps)</label><br><br> 
-          </fieldset>
-          <br>
-          <input type="submit" value="Continue">
-        </form> 
-
-        <br>
+          <form action="">
+              OpenID Connect code:<br>
+              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="2" cols="80"><%= (code) ? code : 'None'%></textarea><br>
+              <br>
+              OpenID Connect access_token:<br> 
+              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="2" cols="80"><%= (access_token) ? access_token : 'None'%>></textarea><br>
+              <br>
+              OpenID Connect User Information:<br>
+              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="1" cols="80"><%= (oidc_jwt_sub) ? oidc_jwt_sub : 'None'%></textarea><br>
+              <br>
+              <br>
+              <a class="btn btn-default" href="/fetch_resource_oidc">Get Data from the Protected Resource (Based on OpenID Connect User Information)</a><br> 
+              <br>
+              Data from the Protected Resource:<br>
+              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="1" cols="80"><%= (data) ? data : 'None'%></textarea><br>
+            </form>
+         <br>
       </div>
     </div><!-- /.container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
