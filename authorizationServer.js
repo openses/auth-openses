@@ -13,24 +13,22 @@ var jose = require('jsrsasign');
 var md5 = require('md5');
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// in files/client/index.html Zeile 45 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
-// in files/client/index.html Zeile 45 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
-// in files/client/index.html Zeile 52 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
-// in files/client/index.html Zeile 52 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
+// in files/client/index.html Zeile 48 bis 60 facebook, google, oidc -> switch local/azure -> redirect
 
-/*
+
 serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = ':9000';
 var port_9001_or_9011 = ':9001';
 var port_9002_or_9012 = ':9002';
-*/
 
+/*
 serverURL = 'localhost';
 var http_or_https = 'http://';
 var port_9000_or_9010 = ':9010';
 var port_9001_or_9011 = ':9011';
-var port_9002_or_9012 = ':9012'; 
+var port_9002_or_9012 = ':9012';
+*/ 
 
 var authorizationServerApp = express();
 

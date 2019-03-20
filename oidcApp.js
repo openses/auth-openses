@@ -2,22 +2,18 @@ const express = require('express');
 const Provider = require('oidc-provider');
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// in files/client/index.html Zeile 45 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
-// in files/client/index.html Zeile 45 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
-// in files/client/index.html Zeile 52 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
-// in files/client/index.html Zeile 52 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
-
-
-/* 
+// in files/client/index.html Zeile 48 bis 60 facebook, google, oidc -> switch local/azure -> redirect
+ 
 serverURL = 'www.innoedu.ch';
 ClientserverURL = 'www.innoedu.ch';
 var http_or_https = 'http://'; //https
 var port_3000_or_3010 = ':3000'; 
-*/
 
+/*
 serverURL = '127.0.0.1';
 var http_or_https = 'http://';
 var port_3000_or_3010 = ':3000'; //3010
+*/
 
 
 

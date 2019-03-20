@@ -25,27 +25,26 @@ const credentials = {
 
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
-// in files/client/index.html Zeile 45 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
-// in files/client/index.html Zeile 45 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
-// in files/client/index.html Zeile 52 redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"
-// in files/client/index.html Zeile 52 redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"
+// in files/client/index.html Zeile 48 bis 60 facebook, google, oidc -> switch local/azure -> redirect
+
 
 // in client.js Zeile 300  var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://localhost:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
 // in client.jsZeile 300 var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
 
-/*
+
 serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = ':9000';
 var port_9001_or_9011 = ':9001';
 var port_9002_or_9012 = ':9002';
-*/
 
+/*
 serverURL = 'localhost';
 var http_or_https = 'http://';
 var port_9000_or_9010 = ':9010';
 var port_9001_or_9011 = ':9011';
 var port_9002_or_9012 = ':9012';
+*/
 
 
 var clientApp = express();
@@ -416,14 +415,19 @@ clientApp.get("/fetch_resource_oidc", function(req, res){
 	res.render('oidc', {code: req.session.oidc_code, access_token: req.session.oidc_access_token, oidc_jwt_sub: req.session.oidc_jwt_sub, data: resourseDataBasedOnOidcID});
 });
 
+clientApp.get("/fetch_resource_google", function(req, res){
+	// this is only fake, it should be a request to protectedResource.js
+	var resourseDataBasedOnGoogleID = 'Resource Data.... ( Resource Owner: ' + JSON.stringify(req.session.google_jwt_payload.name) + ')';
+	res.render('google', {code: req.session.google_code, access_token: req.session.google_access_token, google_jwt_payload_sub: JSON.stringify(req.session.google_jwt_payload.sub), google_jwt_payload_name: JSON.stringify(req.session.google_jwt_payload.name),google_jwt_payload_email: JSON.stringify(req.session.google_jwt_payload.email), data: resourseDataBasedOnGoogleID});
+});
 
-clientApp.get("/sign_in_with_google_under_construction", function(req, res){
+/* clientApp.get("/sign_in_with_google_under_construction", function(req, res){
 	res.render('google');
 });
 
 clientApp.get("/sign_in_with_oidc_under_construction", function(req, res){
 	res.render('oidc');
-});
+}); */
 
 clientApp.get("/get_tokens", function(req, res){
 
