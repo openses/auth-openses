@@ -17,6 +17,7 @@
     "express-jwt": "^5.3.1",
     "express-session": "^1.15.6",
     "forever": "^0.15.3",
+    "googleapis": "^38.0.0",
     "http-errors": "~1.6.2",
     "jsonwebtoken": "^8.3.0",
     "jsrsasign": "^5.0.0",

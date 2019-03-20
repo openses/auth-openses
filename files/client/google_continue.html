@@ -39,29 +39,9 @@
     <div class="container">
 
       <div class="jumbotron">
-          <p>This page represents the <a target="_blank"  href="https://developers.google.com/identity/protocols/OpenIDConnect"><span class="label label-danger">Google Login Flow for WebApps</span></a>  of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p></p>
-          <hr>
-          <form action="">
-              google code:<br>
-              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="3" cols="80"><%= (code) ? code : 'None'%></textarea><br>
-              <br>
-              google access_token:<br> 
-              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="4" cols="80"><%= (access_token) ? access_token : 'None'%>></textarea><br>
-              <br>
-              google User Information:<br>
-              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="4" cols="80">
-                sub: <%= (google_jwt_payload_sub) ? google_jwt_payload_sub : 'None'%>
-                name: <%= (google_jwt_payload_name) ? google_jwt_payload_name : 'None'%>
-                email: <%= (google_jwt_payload_email) ? google_jwt_payload_email : 'None'%>
-              </textarea><br>
-              <br>
-              <br>
-              <a class="btn btn-default" href="/fetch_resource_oidc">Get Data from the Protected Resource (Based on google User Information)</a><br> 
-              <br>
-              Data from the Protected Resource:<br>
-              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="1" cols="80"><%= (data) ? data : 'None'%></textarea><br>
-            </form>
-         <br>
+          <br>
+         <a class="btn btn-danger" href="/callback_google_continue">Continue with <%- (jwt_name) %></a><br>
+         
       </div>
     </div><!-- /.container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

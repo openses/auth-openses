@@ -15,6 +15,8 @@ const http = require('http');
 var outputClient = "";
 const https = require('https'), fs = require('fs') /* , helmet = require('helmet') */ ;
 var jwtDecode = require('jwt-decode');
+const {google} = require('googleapis');
+var OAuth2 = google.auth.OAuth2;
 
 const credentials = {
   key: fs.readFileSync('./bin/privkey.pem', 'utf8'),
@@ -31,20 +33,20 @@ const credentials = {
 // in client.js Zeile 300  var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://localhost:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
 // in client.jsZeile 300 var token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + code,
 
-
+/*
 serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = ':9000';
 var port_9001_or_9011 = ':9001';
 var port_9002_or_9012 = ':9002';
+*/
 
-/* 
 serverURL = 'localhost';
 var http_or_https = 'http://';
 var port_9000_or_9010 = ':9010';
 var port_9001_or_9011 = ':9011';
 var port_9002_or_9012 = ':9012';
-*/
+
 
 var clientApp = express();
 
@@ -324,6 +326,41 @@ clientApp.get("/callback_facebook_token", function(req, res){
 	res.render('facebook_continue', {fb_name: json_fb_body_name});
 });
 
+var client_id = '767040316456-7vuer0neo1id522uftfbeqlrqq2miecu.apps.googleusercontent.com';
+var client_secret = 'bMcQa78_TylxW-P7DePcmrln';
+var RedirectionUrl = 'https://' + serverURL + ':9000/callback_google_code';
+
+
+function getOAuthClient() {
+    return new OAuth2(client_id, client_secret, RedirectionUrl);
+}
+
+clientApp.post("/callback_google_code", function(req, res){
+	var body = req.body;
+	 console.log('body: ', body);
+	 console.log('body.code: ', body.code);
+	 req.session.google_code = body.code;
+	 var google_code = req.session.google_code;
+	var oauth2Client = getOAuthClient();
+	oauth2Client.getToken(google_code, function(err, tokens) {
+		console.log("tokens : ", tokens);
+		req.session.google_access_token = tokens.access_token;
+		req.session.google_id_token = tokens.id_token;
+		console.log("req.session.google_access_token", req.session.google_access_token );
+	console.log("req.session.google_id_token", req.session.google_id_token );
+	var jwt = jwtDecode(tokens.id_token);
+	console.log('jwt: ', jwt);
+	req.session.google_jwt_payload = jwt;
+	console.log('jwt.name ', jwt.name);
+	req.session.google_jwt_name = jwt.name;
+	res.render('google_continue', {jwt_name: req.session.google_jwt_name});
+	});
+});
+
+clientApp.post("/callback_google_token", function(req, res){
+	
+});
+
  clientApp.post("/callback_oidc_token", function(req, res){
 	 // var body = req.body.toString('utf8');
 	 var body = req.body;
@@ -350,6 +387,10 @@ clientApp.get("/callback_facebook_continue", function(req, res){
 
 clientApp.get("/callback_oidc_continue", function(req, res){
 	res.render('oidc', {code: req.session.oidc_code, access_token: req.session.oidc_access_token, oidc_jwt_sub: req.session.oidc_jwt_sub, data: null });
+});
+
+clientApp.get("/callback_google_continue", function(req, res){
+	res.render('google', {code: req.session.google_code, access_token: req.session.google_access_token, google_jwt_payload_sub: JSON.stringify(req.session.google_jwt_payload.sub), google_jwt_payload_name: JSON.stringify(req.session.google_jwt_payload.name),google_jwt_payload_email: JSON.stringify(req.session.google_jwt_payload.email), data: null });
 });
 
 clientApp.get("/get_fb_userInfo", function(req, res){
