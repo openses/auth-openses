@@ -18,7 +18,7 @@ RUN ["chmod", "+x", "/usr/src/app/my_wrapper_script.sh"]
 
 EXPOSE 80
 EXPOSE 443
-EXPOSE 3000
+EXPOSE 3010
 EXPOSE 9000
 EXPOSE 9001
 EXPOSE 9002

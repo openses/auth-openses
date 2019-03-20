@@ -10,7 +10,7 @@ eidlab.innoedu.ch -> localhost
 
 docker push buerojacob.azurecr.io/auth-openses:latest
 az container create --resource-group openses --name authopensescontainerv1 --image buerojacob.azurecr.io/auth-openses:latest 
---ports 443 3000 9000 9001 9002 --dns-name-label auth-openses --cpu 1 --memory 1
+--ports 443 3010 9000 9001 9002 --dns-name-label auth-openses --cpu 1 --memory 1
 
 
 

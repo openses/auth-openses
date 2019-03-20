@@ -26,6 +26,7 @@ const credentials = {
 
 const httpServer = http.createServer(app);
 const oidcHttpServer = http.createServer(oidcApp);
+const oidcHttpsServer = https.createServer(credentials, oidcApp);
 // const clientHttpServer = http.createServer(clientApp);
 const authorizationServerHttpServer = http.createServer(authorizationServerApp);
 const protectedResourceHttpServer = http.createServer(protectedResourceApp);
@@ -42,6 +43,10 @@ httpServer.listen(80, () => {
 
 oidcHttpServer.listen(3000, () => {
 	console.log('oidc HTTP Server running on port 3000');
+});
+
+oidcHttpsServer.listen(3010, () => {
+	console.log('oidc HTTPS Server running on port 3010');
 });
 
 /* clientHttpServer.listen(9000, () => {

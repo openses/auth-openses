@@ -6,8 +6,8 @@ const Provider = require('oidc-provider');
  
 serverURL = 'www.innoedu.ch';
 ClientserverURL = 'www.innoedu.ch';
-var http_or_https = 'http://'; //https
-var port_3000_or_3010 = ':3000'; 
+var http_or_https = 'https://'; 
+var port_3000_or_3010 = ':3010'; 
 
 /*
 serverURL = '127.0.0.1';
