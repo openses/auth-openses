@@ -46,16 +46,22 @@
               <textarea style="background-color:#FF0000;color:#FFFFFF" rows="2" cols="80"><%= (code) ? code : 'None'%></textarea><br>
               <br>
               OpenID Connect access_token:<br> 
-              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="2" cols="80"><%= (access_token) ? access_token : 'None'%>></textarea><br>
+              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="2" cols="80"><%= (access_token) ? access_token : 'None'%></textarea><br>
               <br>
-              OpenID Connect User Information:<br>
-              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="1" cols="80"><%= (oidc_jwt_sub) ? oidc_jwt_sub : 'None'%></textarea><br>
+              OpenID Connect User Subject (sub) Information:<br>
+              <textarea style="background-color:#FF0000;color:#FFFFFF" rows="1" cols="80">sub: <%= (oidc_jwt_sub) ? oidc_jwt_sub : 'None'%></textarea><br>
               <br>
               <br>
               <a class="btn btn-default" href="/fetch_resource_oidc">Get Data from the Protected Resource (Based on OpenID Connect User Information)</a><br> 
               <br>
               Data from the Protected Resource:<br>
               <textarea style="background-color:#FF0000;color:#FFFFFF" rows="1" cols="80"><%= (data) ? data : 'None'%></textarea><br>
+              <br>
+              <br>
+              <!-- Logout azure -->
+              <a class="btn btn-default" href="https://www.innoedu.ch:3010/oidc/session/end">Logout from OpenID Connect</a><br>
+              <!-- Logout local -->
+              <!-- <a class="btn btn-default" href="http://127.0.0.1:3000/oidc/session/end">Logout from OpenID Connect</a><br> -->
             </form>
          <br>
       </div>

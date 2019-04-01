@@ -3,7 +3,9 @@ const Provider = require('oidc-provider');
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
 // in files/client/index.html Zeile 48 bis 60 facebook, google, oidc -> switch local/azure -> redirect
- 
+// in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
+
+
 serverURL = 'www.innoedu.ch';
 ClientserverURL = 'www.innoedu.ch';
 var http_or_https = 'https://'; 
@@ -29,6 +31,7 @@ const clients = [
     grant_types: ['authorization_code', 'implicit'],
     response_types: ['token id_token code'],
     redirect_uris: ['https://' + serverURL + ':9000/callback_oidc_token'],
+    // post_logout_redirect_uri: ['https://' + serverURL + ':9000'],
     token_endpoint_auth_method: 'none'},
 
 
@@ -113,6 +116,7 @@ const oidc = new Provider(http_or_https + serverURL + port_3000_or_3010, {
             'nickname', 'picture', 'preferred_username', 'profile', 'updated_at', 'website', 'zoneinfo']
     },
     scopes: ['api1'],
+    // post_logout_redirect_uri: ['https://' + serverURL + ':9000'],
     features: {
         clientCredentials: true,
         introspection: true,
@@ -125,6 +129,11 @@ const oidc = new Provider(http_or_https + serverURL + port_3000_or_3010, {
         };
     }
 });
+
+oidcApp .get('/', function (req, res) {
+    res.redirect('https://www.innoedu.ch:9000/');
+    return;
+  });
 
 // no stores configured, all in-memory (dev only)
 oidc.initialize({ clients }).then(function () {

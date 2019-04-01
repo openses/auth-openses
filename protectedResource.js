@@ -14,6 +14,7 @@ var cors = require('cors');
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
 // in files/client/index.html Zeile 48 bis 60 facebook, google, oidc -> switch local/azure -> redirect
+// in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
 serverURL = 'www.innoedu.ch';
