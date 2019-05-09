@@ -31,6 +31,11 @@ var routesApi = require('./api/routes/index');
 // var routesOIDC = require('./oidc/routes/index');
 
 var app = express();
+// change from seperated apps (ports) to supApps
+var labRouter = express.Router();
+var clientApp = require("./client");
+var authorizationServerApp = require("./authorizationServer");
+var protectedResourceApp = require("./protectedResource");
 
 // für 
 app.use(express.static('static'));
@@ -44,7 +49,8 @@ app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
+//app.use(logger('dev'));
+app.use(logger('short'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -60,7 +66,32 @@ app.use(passport.initialize());
 app.use('/api', routesApi);
 // app.use('/oidc', routesOIDC);
 
-
+// change from seperated apps (ports) to supApps
+app.use('/labClient', clientApp);
+app.use('/labAuthorizationServer', authorizationServerApp);
+app.post('/labAuthorizationServer/token', function(req,res) {
+  console.log("oh je");
+  res.send("oh je");
+});
+app.use('/labProtectedResource', protectedResourceApp);
+labRouter.all('/labClient/*', clientApp);
+labRouter.all('/labAuthorizationServer/*', authorizationServerApp);
+labRouter.all('/labProtectedResource/*', protectedResourceApp);
+/* app
+ .use('/labClient', clientApp)
+ .use('/labAuthorizationServer', authorizationServerApp)
+ .use('/labProtectedResource', protectedResourceApp)
+//app.use('/labClient', clientApp); */
+// app.use('/labAuthorizationServer', authorizationServerApp);
+//app.use('/labAuthorizationServer', AuthorizationServerRouter);
+//app.post('/labAuthorizationServer/token', authorizationServerApp)
+//app.use('/labAuthorizationServer/token', authorizationServerApp)
+//labRouter.get('/labAuthorizationServer/authorize', authorizationServerApp);
+//labRouter.post('/labAuthorizationServer', authorizationServerApp);
+//app.use('/labProtectedResource', protectedResourceApp);
+/* app.route('/labAuthorizationServer')
+  .get(authorizationServerApp)
+  .post(authorizationServerApp) */
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

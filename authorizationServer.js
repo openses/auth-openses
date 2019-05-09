@@ -1,6 +1,8 @@
 var express = require("express");
+var session = require('express-session');
 var url = require("url");
 var bodyParser = require('body-parser');
+var request_auth = require("request");
 var randomstring = require("randomstring");
 var cons = require('consolidate');
 var nosql = require('nosql').load('database.nosql');
@@ -16,12 +18,13 @@ var md5 = require('md5');
 // in files/client/index.html Zeile 48 bis 60 facebook, google, oidc -> switch local/azure -> redirect
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
-
+/*
 serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = ':9000';
 var port_9001_or_9011 = ':9001';
 var port_9002_or_9012 = ':9002';
+*/
 
 /*
 serverURL = 'localhost';
@@ -31,8 +34,16 @@ var port_9001_or_9011 = ':9011';
 var port_9002_or_9012 = ':9012';
 */
 
+// change from seperated apps (ports) to supApps
+serverURL = 'localhost';
+var http_or_https = 'http://';
+var port_9000_or_9010 = '/labClient';
+var port_9001_or_9011 = '/labAuthorizationServer';
+var port_9002_or_9012 = '/labProtectedResource';
+
 
 var authorizationServerApp = express();
+
 
 authorizationServerApp.use(bodyParser.json());
 authorizationServerApp.use(bodyParser.urlencoded({ extended: true })); // support form-encoded bodies (for the token endpoint)
@@ -204,6 +215,8 @@ authorizationServerApp.get('/', function(req, res) {
 });
 
 authorizationServerApp.get("/authorize", function(req, res){
+	console.log("/authorize wurde mit authorizationServerApp.get aufgerufen");
+	
 	
 	var client = getClient(req.query.client_id);
 	
@@ -240,6 +253,7 @@ authorizationServerApp.get("/authorize", function(req, res){
 });
 
 authorizationServerApp.post('/approve', function(req, res) {
+	console.log("/approve wurde mit authorizationServerApp.post aufgerufen");
 
 	var reqid = req.body.reqid;
 	var query = requests[reqid];
@@ -329,7 +343,18 @@ authorizationServerApp.post('/approve', function(req, res) {
 	
 });
 
-authorizationServerApp.post("/token", function(req, res){
+authorizationServerApp.get('/testMethodGet', function(req, res) {
+	console.log("/test Routing Test for http://localhost/labAuthorizationServer/testMethodGet");
+	res.send("/test Routing Test for http://localhost/labAuthorizationServer/testMethodGet");
+});
+
+authorizationServerApp.post('/testMethodPost', function(req, res) {
+	console.log("/test Routing Test for http://localhost/labAuthorizationServer/testMethodPost");
+	res.send("/test Routing Test for  http://localhost/labAuthorizationServer/testMethodPost");
+});
+
+authorizationServerApp.post("/token", function(req, res, next){
+	console.log("/token wurde mit authorizationServerApp.post aufgerufen");
 	
 	var auth = req.headers['authorization'];
 	if (auth) {
@@ -408,10 +433,33 @@ authorizationServerApp.post("/token", function(req, res){
 					token_response.id_token = id_token;
 				}
 
-				res.status(200).json(token_response);
-				console.log('Issued tokens for code %s', req.body.code);
+				// res.status(200).json(token_response);
+				console.log('Zeile 436 Issued tokens for code %s', req.body.code);
+				// var callback_response = request_auth.post({url: 'http://localhost/labClient/callback_get_access_token', body: token_response});
+				// console.log("callback_response.status: " + callback_response.status);
+				console.log('Zeile 439');
+				console.log('token_response: ' + token_response);
+				session.token_response = token_response;
 				
+				request_auth.post({
+					// url: 'http://localhost/labClient/callback_get_access_token',
+					url: http_or_https + serverURL + port_9000_or_9010 + '/callback_get_access_token',
+					body: token_response,
+					json: true
+				  }, function(error, response, body){
+				  console.log('request_auth.post token_response: ' + body);
+				  res.status(200).send(body);
+				});
+				
+				/* res.status(200).json(token_response);
+				res.end(); */
+				//res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+				// res.redirect('http://localhost/labClient/');
+				// res_test.redirect(http_or_https + serverURL + port_9000_or_9010 + '/callback_get_access_token/?token_response=' + token_response);
+				console.log("Ende: authorizationServerApp.post('/token'");
 				return;
+				// next();
+				
 			} else {
 				console.log('Client mismatch, expected %s got %s', code.request.client_id, clientId);
 				res.status(400).json({error: 'invalid_grant'});
@@ -460,6 +508,5 @@ authorizationServerApp.use('/', express.static('files/authorizationServer'));
 
 // clear the database
 nosql.clear();
-
 
 module.exports = authorizationServerApp;

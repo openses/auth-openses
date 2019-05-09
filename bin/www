@@ -25,20 +25,27 @@ const credentials = {
  */
 
 const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
 const oidcHttpServer = http.createServer(oidcApp);
 const oidcHttpsServer = https.createServer(credentials, oidcApp);
 // const clientHttpServer = http.createServer(clientApp);
-const authorizationServerHttpServer = http.createServer(authorizationServerApp);
+// change from seperated apps (ports) to supApps
+// const authorizationServerHttpServer = http.createServer(authorizationServerApp);
+// const authorizationServerHttpsServer = https.createServer(credentials, authorizationServerApp);
 const protectedResourceHttpServer = http.createServer(protectedResourceApp);
-const authorizationServerHttpsServer = https.createServer(credentials, authorizationServerApp);
 const protectedResourceHttpsServer = https.createServer(credentials, protectedResourceApp);
-const httpsServer = https.createServer(credentials, app);
+
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 httpServer.listen(80, () => {
 	console.log('HTTP Server running on port 80');
+});
+
+// server.listen(443);
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
 });
 
 oidcHttpServer.listen(3000, () => {
@@ -53,23 +60,22 @@ oidcHttpsServer.listen(3010, () => {
 	console.log('client Http Server running on port 9000');
 }); */
 
+// change from seperated apps (ports) to supApps
+/*
 authorizationServerHttpServer.listen(9011, () => {
 	console.log('oauthorizationServer Http Server running on port 9011');
-});
-
-protectedResourceHttpServer.listen(9012, () => {
-	console.log('protectedResourceHttpServer Http Server running on port 9012');
 });
 
 authorizationServerHttpsServer.listen(9001, () => {
 	console.log('oauthorizationServer Https Server running on port 9001');
 });
 
+
+protectedResourceHttpServer.listen(9012, () => {
+	console.log('protectedResourceHttpServer Http Server running on port 9012');
+});
+
 protectedResourceHttpsServer.listen(9002, () => {
 	console.log('protectedResourceHttpsServer Https Server running on port 9002');
 });
-
-// server.listen(443);
-httpsServer.listen(443, () => {
-	console.log('HTTPS Server running on port 443');
-});
+*/
