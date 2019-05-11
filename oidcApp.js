@@ -5,17 +5,17 @@ const Provider = require('oidc-provider');
 // in files/client/index.html Zeile 48 bis 60 facebook, google, oidc -> switch local/azure -> redirect
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
-/*
+
 serverURL = 'www.innoedu.ch';
 ClientserverURL = 'www.innoedu.ch';
 var http_or_https = 'https://'; 
 var port_3000_or_3010 = ':3010'; 
-*/
 
+/*
 serverURL = '127.0.0.1';
 var http_or_https = 'http://';
 var port_3000_or_3010 = ':3000'; //3010
-
+*/
 
 
 

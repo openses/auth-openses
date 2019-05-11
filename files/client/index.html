@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>eidlab.ch client</title>
-    <link rel="icon" type="image/x-icon" href="/labClient/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <!-- Bootstrap -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<style>
@@ -29,7 +29,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color:#546E7A;">
       <div class="container">
         <div class="navbar-header">
-          <a target="_blank" class="navbar-brand" href="http://eidlab.ch"><img _ngcontent-c0="" alt="Identity Federation Playground / eIdLab.ch" src="/labClient/toolbar_logo.png"></a>
+          <a target="_blank" class="navbar-brand" href="http://eidlab.ch"><img _ngcontent-c0="" alt="Identity Federation Playground / eIdLab.ch" src="/toolbar_logo.png"></a>
           <a target="_blank" class="navbar-brand" href="http://oauth.eidlab.ch"><span class="label label-danger">Go To Authorization Server</span></a>
           <a target="_blank" class="navbar-brand" href="http://resource.eidlab.ch/info"><span class="label label-warning">Go To Protected Resources Server</span></a>
         </div>
@@ -44,37 +44,29 @@
       <hr>
       Social Logins:
       <!-- facebook azure  -->
-      <!-- &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=code&response_mode=query&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"><img src="sign_in_with_facebook.png" alt="Sign In with Facebook"></a> -->
+      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=code&response_mode=query&redirect_uri=https://www.innoedu.ch:9000/callback_facebook_token&state='123'"><img src="sign_in_with_facebook.png" alt="Sign In with Facebook"></a>
       <!-- facebook local  -->
       <!-- &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=code&response_mode=query&redirect_uri=https://localhost:9000/callback_facebook_token&state='123'"><img src="sign_in_with_facebook.png" alt="Sign In with Facebook"></a> -->
-      <!-- facebook local  change subApp-->
-      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=code&response_mode=query&redirect_uri=https://localhost/labClient/callback_facebook_token&state='123'"><img src="/labClient/sign_in_with_facebook.png" alt="Sign In with Facebook"></a>
-
       <!-- google azure  -->
-      <!-- &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://accounts.google.com/o/oauth2/auth?client_id=767040316456-7vuer0neo1id522uftfbeqlrqq2miecu.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fwww.innoedu.ch%3A9000%2Fcallback_google_code&scope=openid%20email%20profile&response_type=code&response_mode=form_post&state=12345&nonce=l34hldrbky"><img src="sign_in_with_google.png" alt="Sign In with Google"></a> -->
+      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://accounts.google.com/o/oauth2/auth?client_id=767040316456-7vuer0neo1id522uftfbeqlrqq2miecu.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fwww.innoedu.ch%3A9000%2Fcallback_google_code&scope=openid%20email%20profile&response_type=code&response_mode=form_post&state=12345&nonce=l34hldrbky"><img src="sign_in_with_google.png" alt="Sign In with Google"></a>
       <!-- google local  -->
       <!-- &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://accounts.google.com/o/oauth2/auth?client_id=767040316456-7vuer0neo1id522uftfbeqlrqq2miecu.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%3A9000%2Fcallback_google_code&scope=openid%20email%20profile&response_type=code&response_mode=form_post&state=12345&nonce=l34hldrbky"><img src="sign_in_with_google.png" alt="Sign In with Google"></a> -->
-      <!-- google local  change subApp-->
-      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://accounts.google.com/o/oauth2/auth?client_id=767040316456-7vuer0neo1id522uftfbeqlrqq2miecu.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flocalhost%2FlabClient%2Fcallback_google_code&scope=openid%20email%20profile&response_type=code&response_mode=form_post&state=12345&nonce=l34hldrbky"><img src="/labClient/sign_in_with_google.png" alt="Sign In with Google"></a>
       <!-- oidc azure  -->
-      <!-- &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://www.innoedu.ch:3010/oidc/auth?client_id=eidlab_token_id_token_code&redirect_uri=https%3A%2F%2Fwww.innoedu.ch%3A9000%2Fcallback_oidc_token&scope=openid&response_type=code%20token%20id_token&response_mode=form_post&state=123&nonce=b0f0jhk5onw"><img src="sign_in_with_openid.png" alt="Sign In with OpenId"></a> -->
+      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="https://www.innoedu.ch:3010/oidc/auth?client_id=eidlab_token_id_token_code&redirect_uri=https%3A%2F%2Fwww.innoedu.ch%3A9000%2Fcallback_oidc_token&scope=openid&response_type=code%20token%20id_token&response_mode=form_post&state=123&nonce=b0f0jhk5onw"><img src="sign_in_with_openid.png" alt="Sign In with OpenId"></a>
       <!-- oidc local  -->
       <!-- &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="http://localhost:3000/oidc/auth?client_id=eidlab_token_id_token_code&redirect_uri=https%3A%2F%2F127.0.0.1%3A9000%2Fcallback_oidc_token&scope=openid&response_type=code%20token%20id_token&response_mode=form_post&state=123&nonce=b0f0jhk5onw"><img src="sign_in_with_openid.png" alt="Sign In with OpenId"></a> -->
-      <!-- oidc local  -->
-      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="http://localhost:3000/oidc/auth?client_id=eidlab_token_id_token_code&redirect_uri=https%3A%2F%2F127.0.0.1%2FlabClient%2Fcallback_oidc_token&scope=openid&response_type=code%20token%20id_token&response_mode=form_post&state=123&nonce=b0f0jhk5onw"><img src="/labClient/sign_in_with_openid.png" alt="Sign In with OpenId"></a>
-
       <hr>
       Interactive <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> Login Flow:<br><br>
       Preparation:
-      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="/labClient/sign_out_destroy_session">Clean Tokens and Destroy Sessions</a><br>
+      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="/sign_out_destroy_session">Clean Tokens and Destroy Sessions</a><br>
       <br>
-      <a class="btn btn-default" href="/labClient/authorize">1 Sign In with the eIdLab Authorization Server => Approve this Client and Scope => Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
+      <a class="btn btn-default" href="/authorize">1 Sign In with the eIdLab Authorization Server => Approve this Client and Scope => Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
       <br>
-      <a class="btn btn-default" href="/labClient/get_access_token">2.1 Get Access (Refresh) Token and Scope from Authorization Server</a>
+      <a class="btn btn-default" href="/get_access_token">2.1 Get Access (Refresh) Token and Scope from Authorization Server</a>
         Access Token: <span class="label label-danger"><%- (access_token && oidcflow.includes('b')) ? access_token : 'NONE' %></span>
         Refresh token value: <span class="label label-danger"><%- (refresh_token && oidcflow.includes('b')) ? refresh_token : 'NONE' %></span>
         Scope: <span class="label label-danger"><%- (scope && oidcflow.includes('b')) ? scope : 'NONE' %></span><br><br>
-      <a class="btn btn-default" href="/labClient/fetch_resource_with_access_token">2.2 Get Data from Protected Resource without UserID</a> 
+      <a class="btn btn-default" href="/fetch_resource_with_access_token">2.2 Get Data from Protected Resource without UserID</a> 
       Data from Protected Resource:
       <span class="label label-warning">
  
@@ -85,7 +77,7 @@
       <% } %>
       </span><br>
       <br>
-      <a class="btn btn-default" href="/labClient/get_id_token">3.1 Get ID Token from Authorization Server</a>
+      <a class="btn btn-default" href="/get_id_token">3.1 Get ID Token from Authorization Server</a>
        ID Token (JSON Web Token / JWT): 
           <% if (id_token && oidcflow.includes('d')) { %> 
             <pre>
@@ -95,9 +87,9 @@
             <span class="label label-danger">NONE</span>
           <% } %><br>
       <br>
-      <a class="btn btn-default" href="/labClient/decode_jwt">3.2 Decode ID Token</a> Logged in User Subject: <span class="label label-danger"><%- (sub && oidcflow.includes('e')) ? sub : 'NONE' %></span> from Issuer: <span class="label label-danger"><%- (iss && oidcflow.includes('e')) ? iss : 'NONE' %></span><br>
+      <a class="btn btn-default" href="/decode_jwt">3.2 Decode ID Token</a> Logged in User Subject: <span class="label label-danger"><%- (sub && oidcflow.includes('e')) ? sub : 'NONE' %></span> from Issuer: <span class="label label-danger"><%- (iss && oidcflow.includes('e')) ? iss : 'NONE' %></span><br>
       <br>
-      <a class="btn btn-default" href="/labClient/userinfo">3.3 Get User Data from Identity Provider (based on Scope)</a> Data from Identity Provider:
+      <a class="btn btn-default" href="/userinfo">3.3 Get User Data from Identity Provider (based on Scope)</a> Data from Identity Provider:
       <% if (userInfo && oidcflow.includes('f')) { %>
             <ul style="background-color:#F0AD4E;color:white">
               <% _.each(userInfo, function(value, key, list) { %>
@@ -128,7 +120,7 @@
           <% } %>
         <br>
         <br>
-        <a class="btn btn-default" href="/labClient/fetch_resource">3.4 Get Data from Protected Resource (based on Scope and ID Token)</a> Data from Protected Resource:
+        <a class="btn btn-default" href="/fetch_resource">3.4 Get Data from Protected Resource (based on Scope and ID Token)</a> Data from Protected Resource:
         <% if (resource && oidcflow.includes('g')) { %> 
             <ul style="background-color:#F0AD4E;color:white">
                 Data owner: <%- userInfo.name %><br>
@@ -149,7 +141,7 @@
       <br> 
       <br>
       <!-- *This feature will be implemented later in a new Client HTML View. -->
-      <a class="btn btn-default" href="/labClient/sign_out_destroy_session">4 Register new Client/Relying Party*</a><br>
+      <a class="btn btn-default" href="/sign_out_destroy_session">4 Register new Client/Relying Party*</a><br>
       *This feature and Webfinger Discovery and User Managed Access (UMA) will be implemented later in a new Client HTML View.<br>
       Note: You can view all registered Clients in the Authorization Server.
       </div>
@@ -162,7 +154,7 @@
   <nav class="navbar navbar-inverse navbar-fixed-bottom" style="background-color:#546E7A;">
     <div class="container">
       <div class="navbar-header" style="text-align:center;font-size:15px;color:white">
-        <a target="_blank" class="navbar-brand"  href="https://github.com/openses/auth-openses/blob/master/client.js">Client Javascript Source</a>
+        <a target="_blank" class="navbar-brand"  href="https://github.com/openses/auth-openses/blob/master/client.js">Cient Javascript Source</a>
         <a target="_blank" class="navbar-brand" href="https://github.com/openses/auth-openses/tree/master/files/client">Client HTML View Sources</a>
         <a target="_blank" class="navbar-brand" href="https://github.com/oauthinaction/oauth-in-action-code">Original Sources</a>
         <a target="_blank" class="navbar-brand" href="https://buerojacob.ch/kontakt.html">Impressum</a><br>

@@ -1,8 +1,7 @@
 var express = require("express");
 var session = require('express-session');
 var bodyParser = require('body-parser');
-var request_sync = require("sync-request");
-var request = require("request");
+var request = require("sync-request");
 var url = require("url");
 var qs = require("qs");
 var querystring = require('querystring');
@@ -18,9 +17,6 @@ const https = require('https'), fs = require('fs') /* , helmet = require('helmet
 var jwtDecode = require('jwt-decode');
 const {google} = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
-
-var access_token_global_var = null;//global variable 
-
 /* var FB = require('fb').default;
 
 FB.init({
@@ -40,13 +36,12 @@ const credentials = {
 // in files/client/index.html Zeile 48 bis 60 facebook, google, oidc -> switch local/azure -> redirect
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
-/*
+
 serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = ':9000';
 var port_9001_or_9011 = ':9001';
 var port_9002_or_9012 = ':9002';
-*/
 
 /*
 serverURL = 'localhost';
@@ -56,18 +51,10 @@ var port_9001_or_9011 = ':9011';
 var port_9002_or_9012 = ':9012';
 */
 
-// change from seperated apps (ports) to supApps
-serverURL = 'localhost';
-var http_or_https = 'http://';
-var port_9000_or_9010 = '/labClient';
-var port_9001_or_9011 = '/labAuthorizationServer';
-var port_9002_or_9012 = '/labProtectedResource';
 
 var clientApp = express();
 
-clientApp.use(session({secret: "xcerats24srw",
-resave: true,
-saveUninitialized: true}));
+clientApp.use(session({secret: "xcerats24srw"}));
 
 clientApp.use(bodyParser.json());
 clientApp.use(bodyParser.urlencoded({ extended: true }));
@@ -106,13 +93,11 @@ var protectedResource = http_or_https + serverURL + port_9002_or_9012 + '/resour
 var state = null;
 
 clientApp.get('/', function (req, res, next) {
-	console.log("clientApp.get('/'");
-	console.log("req.session.access_token:" + req.session.access_token);
 	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 });
 
 clientApp.get('/authorize', function(req, res){
-	console.log("/authorize wurde mit clientApp.get aufgerufen");
+
 	// req.session.oidcflow= 'start';
 
 	if (!req.session.oidcflow ) {
@@ -265,10 +250,12 @@ clientApp.get("/callback", function(req, res){
 			iss = payload.iss;
 			req.session.iss = iss;
 			
+			// res.render('userinfo', {userInfo: userInfo, id_token: id_token});
 			res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 			return;
 		}
 		
+		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
 		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 		return;
 
@@ -279,7 +266,6 @@ clientApp.get("/callback", function(req, res){
 });
 
 clientApp.get("/callback_code", function(req, res){
-	console.log("/callback_code wurde aufgerufen")
 
 	// req.session.oidcflow = 'code';
 	if (!req.session.oidcflow) {
@@ -312,7 +298,6 @@ clientApp.get("/callback_code", function(req, res){
 	var code = req.query.code;
 	req.session.render_code = code;
 	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-	console.log("/callback_code wurde abgeschlossen")
 	return;
 });
 
@@ -590,10 +575,8 @@ clientApp.get("/get_tokens", function(req, res){
 	}
 });
 
+clientApp.get("/get_access_token", function(req, res){
 
-
-clientApp.get("/get_access_token", function(req, res, next){
-console.log("/get_access_token wurde aufgerufen");
 	// req.session.oidcflow = 'tokens';
 	if (!req.session.oidcflow ) {
 		req.session.oidcflow = 'z';
@@ -601,7 +584,6 @@ console.log("/get_access_token wurde aufgerufen");
 	if (req.session.oidcflow.includes('b')) {
 		req.session.oidcflow = req.session.oidcflow.concat('c');
 		};
-	console.log("req.session.oidcflow: " + req.session.oidcflow);
 	
 	if (req.query.error) {
 		// it's an error response, act accordingly
@@ -622,82 +604,32 @@ console.log("/get_access_token wurde aufgerufen");
 
 	var resState = req.session.resState;
 	var code = req.session.render_code;
-	req.session.state_get_access_token = 0;
-	console.log("Zeile 626 req.session.state_get_access_token:" + req.session.state_get_access_token);
 
 	var form_data = qs.stringify({
 				grant_type: 'authorization_code',
 				code: code,
 				redirect_uri: client.redirect_uris[0]
 			});
-	var headers_var = {
+	var headers = {
 		'Content-Type': 'application/x-www-form-urlencoded',
 		'Authorization': 'Basic ' + encodeClientCredentials(client.client_id, client.client_secret)
 	};
-	console.log("tokenEndpoint wird aufgerufen mit POST request an authServer.tokenEndpoint: " + authServer.tokenEndpoint);
-	console.log("form_data: " + form_data);
-	console.log("headers: " + JSON.stringify(headers_var));
-	console.log("headers: " + headers_var);
-	console.log("Rejecting node tls");
-	process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-	// var tokRes = "";
-	console.log("Line 644");
-	
 
-	/* var	tokRes = request.post({headers: headers_var, url: authServer.tokenEndpoint, body: form_data}, function(error, response, body) {
-			console.log("Line 647");
-			console.log("Ende: var	tokRes = request.post({headers: headers_var, url: authServer.tokenEndpoint, body: form_data} ");
-			console.log('req.session.render_code: ' + req.session.render_code,);
-			res.redirect('/');
-			// req.session.access_token = access_token_global_var;
-			// access_token_global_var=null;
-			// console.log('Zeile 655 -> req.session.access_token: ' + req.session.access_token,);
-			// console.log('access_token_global_var: ' + access_token_global_var);
-			// req.session.state_get_access_token = 1;
-			// console.log("Zeile 658 req.session.state_get_access_token:" + req.session.state_get_access_token);
-			// res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+	var tokRes = request('POST', authServer.tokenEndpoint, 
+		{	
+			body: form_data,
+			headers: headers
 		}
-		); */
+	);
 
-		var tokRes = request.post({
-			headers: headers_var, 
-			url: authServer.tokenEndpoint, 
-			body: form_data
-		}, function(error, response, body) {
-			console.log('request.post: ' + body);
-			// response.send(body);
-			// next();
-			// res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-			//res.redirect('/');
-			//res.redirect('http://localhost/labClient/');
-			// return;
-			tokRes.end();
-		});
-		// tokRes.end();
-		console.log("Ende: clientApp.get('/get_access_token'");
-		// next();
-		// return;
-
-});
-
-
-
-clientApp.post('/callback_get_access_token', function(req, res, next){
-	console.log("/get_access_token_callback wurde aufgerufen");
-	console.log(req.body);
-	// var body = JSON.parse(req.body);
-	var body = req.body;
-	req.session.body = body;
+	console.log('Requesting access token for code %s',code);
+		
+	if (tokRes.statusCode >= 200 && tokRes.statusCode < 300) {
+		var body = JSON.parse(tokRes.getBody());
+		req.session.body = body;
 		access_token = body.access_token;
-		console.log("Zeile 674 req.session.state_get_access_token:" + req.session.state_get_access_token);
-		/* while (req.session.state_get_access_token == 0) {
-			console.log("Line 676");
-	} */
-	console.log("Zeile 678 req.session.state_get_access_token:" + req.session.state_get_access_token);
 		req.session.access_token = access_token;
-		// access_token_global_var = access_token;
-		console.log('Zeile 681 -> Got req.session.access token: %s', req.session.access_token);
-		// console.log('Got access_token_global_var: %s', access_token_global_var);
+		console.log('Got access token: %s', access_token);
 		outputClient = outputClient + "access token: %s" + access_token  + "<br>";
 		if (body.refresh_token) {
 			refresh_token = body.refresh_token;
@@ -707,16 +639,18 @@ clientApp.post('/callback_get_access_token', function(req, res, next){
 
 		scope = body.scope;
 		req.session.scope = scope;
-		console.log('Zeil 692 Got scope: %s', scope);
-		// outputClient = outputClient + "scope: %s" + scope  + "<br>";
-		console.log("Zeile 695 -> Ende: clientApp.post('/callback_get_access_token'");
+		console.log('Got scope: %s', scope);
+		outputClient = outputClient + "scope: %s" + scope  + "<br>";
+		
+		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
 		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-		res.redirect('http://localhost/labClient/');
-		// res.redirect('/');
-		// next();
-		console.log('Zeile 717');
-});
+		return;
 
+	} else {
+		res.render('error', {error: 'Unable to fetch access token, server response: ' + tokRes.statusCode})
+		return;
+	}
+});
 
 clientApp.get('/fetch_resource_with_access_token', function(req, res) {
 
@@ -984,8 +918,6 @@ var encodeClientCredentials = function(clientId, clientSecret) {
 	return new Buffer(querystring.escape(clientId) + ':' + querystring.escape(clientSecret)).toString('base64');
 };
 
-// change from seperated apps (ports) to supApps
-/*
 const clientHttpServer = http.createServer(clientApp);
 const clientHttpsServer = https.createServer(credentials, clientApp);
 
@@ -996,7 +928,6 @@ clientHttpsServer.listen(9000, () => {
 clientHttpServer.listen(9010, () => {
 	console.log('client Http Server running on port 9010');
 });
-*/
 
 /* var server = clientApp.listen(9000, serverURL  , function () {
   var host = server.address().address;
@@ -1004,11 +935,5 @@ clientHttpServer.listen(9010, () => {
   console.log('OAuth Client is listening at http://%s:%s', host, port);
 });  */
 
-// change from seperated apps (ports) to supApps
-/*
-module.exports = clientApp;
-*/
 
-
-
-module.exports = clientApp;
+// module.exports = clientApp;s
