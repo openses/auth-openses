@@ -354,7 +354,7 @@ authorizationServerApp.post('/testMethodPost', function(req, res) {
 });
 
 authorizationServerApp.post("/token", function(req, res, next){
-	console.log("/token wurde mit authorizationServerApp.post aufgerufen");
+	console.log("Zeile 357: /token wurde mit authorizationServerApp.post aufgerufen");
 	
 	var auth = req.headers['authorization'];
 	if (auth) {
@@ -438,8 +438,8 @@ authorizationServerApp.post("/token", function(req, res, next){
 				// var callback_response = request_auth.post({url: 'http://localhost/labClient/callback_get_access_token', body: token_response});
 				// console.log("callback_response.status: " + callback_response.status);
 				console.log('Zeile 439');
-				console.log('token_response: ' + token_response);
-				session.token_response = token_response;
+				console.log('JSON.token_response: ' + JSON.stringify(token_response));
+				// session.token_response = token_response;
 				
 				request_auth.post({
 					// url: 'http://localhost/labClient/callback_get_access_token',
@@ -447,18 +447,12 @@ authorizationServerApp.post("/token", function(req, res, next){
 					body: token_response,
 					json: true
 				  }, function(error, response, body){
-				  console.log('request_auth.post token_response: ' + body);
+				  console.log('Zeile 450: request_auth.post token_response: ' + body);
 				  res.status(200).send(body);
-				});
-				
-				/* res.status(200).json(token_response);
-				res.end(); */
-				//res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-				// res.redirect('http://localhost/labClient/');
-				// res_test.redirect(http_or_https + serverURL + port_9000_or_9010 + '/callback_get_access_token/?token_response=' + token_response);
+				}); 
+				// res.status(200).send(token_response);
 				console.log("Ende: authorizationServerApp.post('/token'");
 				return;
-				// next();
 				
 			} else {
 				console.log('Client mismatch, expected %s got %s', code.request.client_id, clientId);
