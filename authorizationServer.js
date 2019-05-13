@@ -17,19 +17,19 @@ var md5 = require('md5');
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
-serverURL = 'www.innoedu.ch';
+/* serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
-var port_9000_or_9010 = ':9000';
+var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9001';
-var port_9002_or_9012 = ':9002';
+var port_9002_or_9012 = ':9002'; */
 
-/*
+
 serverURL = 'localhost';
 var http_or_https = 'http://';
-var port_9000_or_9010 = ':9010';
+var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9011';
 var port_9002_or_9012 = ':9012';
-*/
+
 
 
 var authorizationServerApp = express();
@@ -330,7 +330,8 @@ authorizationServerApp.post('/approve', function(req, res) {
 });
 
 authorizationServerApp.post("/token", function(req, res){
-	
+	console.log("authorizationServer.js 333 -> '/token'");
+	// console.log("authorizationServer.js 334 -> req" + JSON.parse(req));	
 	var auth = req.headers['authorization'];
 	if (auth) {
 		// check the auth header
@@ -354,7 +355,7 @@ authorizationServerApp.post("/token", function(req, res){
 	
 	var client = getClient(clientId);
 	if (!client) {
-		console.log('Unknown client %s', clientId);
+		console.log('authorizationServer.js 357 Unknown client %s', clientId);
 		res.status(401).json({error: 'invalid_client'});
 		return;
 	}
@@ -376,8 +377,8 @@ authorizationServerApp.post("/token", function(req, res){
 				var access_token = randomstring.generate();
 				nosql.insert({ access_token: access_token, client_id: clientId, scope: code.scope, user: code.user });
 
-				console.log('Issuing access token %s', access_token);
-				console.log('with scope %s', code.scope);
+				console.log('authorizationServer.js Zeile 379 -> Issuing access token %s', access_token);
+				console.log('authorizationServer.js Zeile 380 -> with scope %s', code.scope);
 
 				var cscope = null;
 				if (code.scope) {
@@ -403,14 +404,14 @@ authorizationServerApp.post("/token", function(req, res){
 					var privateKey = jose.KEYUTIL.getKey(rsaKey);
 					var id_token = jose.jws.JWS.sign(header.alg, JSON.stringify(header), JSON.stringify(ipayload), privateKey);
 
-					console.log('Issuing ID token %s', id_token);
+					console.log('authorizationServer.js Zeile 406 -> Issuing ID token %s', id_token);
 
 					token_response.id_token = id_token;
 				}
-
+				// res.redirect('http://localhost/labClient/callback_get_access_token');
 				res.status(200).json(token_response);
-				console.log('Issued tokens for code %s', req.body.code);
-				
+				console.log('authorizationServer.js Zeile 412 -> Issued tokens for code %s', req.body.code);
+				console.log('authorizationServer.js Zeile 413 -> res.status', res.status);
 				return;
 			} else {
 				console.log('Client mismatch, expected %s got %s', code.request.client_id, clientId);

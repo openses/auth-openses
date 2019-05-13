@@ -6,16 +6,16 @@ const Provider = require('oidc-provider');
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
-serverURL = 'www.innoedu.ch';
+/* serverURL = 'www.innoedu.ch';
 ClientserverURL = 'www.innoedu.ch';
 var http_or_https = 'https://'; 
-var port_3000_or_3010 = ':3010'; 
+var port_3000_or_3010 = ':3010'; */ 
 
-/*
+
 serverURL = '127.0.0.1';
 var http_or_https = 'http://';
 var port_3000_or_3010 = ':3000'; //3010
-*/
+
 
 
 
@@ -30,8 +30,8 @@ const clients = [
     client_secret: 'super_secret',
     grant_types: ['authorization_code', 'implicit'],
     response_types: ['token id_token code'],
-    redirect_uris: ['https://' + serverURL + ':9000/callback_oidc_token'],
-    // post_logout_redirect_uri: ['https://' + serverURL + ':9000'],
+    redirect_uris: ['https://' + serverURL + '/labClient/callback_oidc_token'],
+    // post_logout_redirect_uri: ['https://' + serverURL + '/labClient'],
     token_endpoint_auth_method: 'none'},
 
 
@@ -81,7 +81,7 @@ const clients = [
     client_secret: 'client_secret',
     grant_types: ['authorization_code'],
     response_types: ['code'],
-    redirect_uris: ['https://localhost:9000/callback_oidc_token'],
+    redirect_uris: ['https://localhost/labClient/callback_oidc_token'],
     token_endpoint_auth_method: 'none'},
     // token
     {client_id: 'token',
@@ -116,7 +116,7 @@ const oidc = new Provider(http_or_https + serverURL + port_3000_or_3010, {
             'nickname', 'picture', 'preferred_username', 'profile', 'updated_at', 'website', 'zoneinfo']
     },
     scopes: ['api1'],
-    // post_logout_redirect_uri: ['https://' + serverURL + ':9000'],
+    // post_logout_redirect_uri: ['https://' + serverURL + '/labClient'],
     features: {
         clientCredentials: true,
         introspection: true,
@@ -131,7 +131,7 @@ const oidc = new Provider(http_or_https + serverURL + port_3000_or_3010, {
 });
 
 oidcApp .get('/', function (req, res) {
-    res.redirect('https://www.innoedu.ch:9000/');
+    res.redirect('https://www.innoedu.ch/labClient/');
     return;
   });
 

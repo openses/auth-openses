@@ -2,6 +2,8 @@ var express = require("express");
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var request = require("sync-request");
+var request_async = require("request");
+var axios = require('axios');
 var url = require("url");
 var qs = require("qs");
 var querystring = require('querystring');
@@ -37,19 +39,19 @@ const credentials = {
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
-serverURL = 'www.innoedu.ch';
+/* serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
-var port_9000_or_9010 = ':9000';
+var port_9000_or_9010 = '/labClient'';
 var port_9001_or_9011 = ':9001';
-var port_9002_or_9012 = ':9002';
+var port_9002_or_9012 = ':9002'; */
 
-/*
+
 serverURL = 'localhost';
 var http_or_https = 'http://';
-var port_9000_or_9010 = ':9010';
+var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9011';
 var port_9002_or_9012 = ':9012';
-*/
+
 
 
 var clientApp = express();
@@ -68,7 +70,7 @@ clientApp.set('views', 'files/client');
 var client = {
 	"client_id": "oauth-client-1",
 	"client_secret": "oauth-client-secret-1",
-	// "redirect_uris": ["https://" + serverURL + ":9000/callback"],
+	// "redirect_uris": ["https://" + serverURL + "/labClient/callback"],
 	"redirect_uris": [http_or_https + serverURL + port_9000_or_9010 + "/callback_code"],
 	"scope": "openid profile email permission credentials"
 };
@@ -93,6 +95,14 @@ var protectedResource = http_or_https + serverURL + port_9002_or_9012 + '/resour
 var state = null;
 
 clientApp.get('/', function (req, res, next) {
+	console.log("client.js 98 -> 'req.session.render_code: " + req.session.render_code);
+	console.log("client.js 99 -> 'req.session.access_token: " + req.session.access_token);
+	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+});
+
+clientApp.get('/labClient', function (req, res, next) {
+	console.log("client.js 104 -> 'req.session.render_code: " + req.session.render_code);
+	console.log("client.js 105 -> 'req.session.access_token: " + req.session.access_token);
 	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 });
 
@@ -305,15 +315,15 @@ clientApp.get("/callback_code", function(req, res){
 }); */
 
 clientApp.get("/callback_facebook_code", function(req, res){
-	var facebook_oauth =request("GET", "https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=code&response_mode=query&redirect_uri=https://localhost:9000/callback_facebook_token&state='123'");
+	var facebook_oauth =request("GET", "https://www.facebook.com/v3.2/dialog/oauth?client_id=326817281370555&scope=email&response_type=code&response_mode=query&redirect_uri=https://localhost/labClient/callback_facebook_token&state='123'");
 });
 
 clientApp.get("/callback_facebook_token", function(req, res){
 	var facebook_code = req.query.code;
 	console.log('code : ',  facebook_code)
 	req.session.facebook_code = facebook_code;
-	// var facebook_token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://localhost:9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + facebook_code,
-	var facebook_token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://' + serverURL + ':9000/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + facebook_code,
+	// var facebook_token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://localhost/labClient/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + facebook_code,
+	var facebook_token = request('GET', 'https://graph.facebook.com/v3.2/oauth/access_token?client_id=326817281370555&redirect_uri=https://' + serverURL + '/labClient/callback_facebook_token&client_secret=5ced210c64d794c7590084a1d2e1bff5&code=' + facebook_code,
 	req.body
 	);
 	console.log("token.req.body", facebook_token.body);
@@ -341,7 +351,7 @@ clientApp.get("/callback_facebook_token", function(req, res){
 
 var client_id = '767040316456-7vuer0neo1id522uftfbeqlrqq2miecu.apps.googleusercontent.com';
 var client_secret = 'bMcQa78_TylxW-P7DePcmrln';
-var RedirectionUrl = 'https://' + serverURL + ':9000/callback_google_code';
+var RedirectionUrl = 'https://' + serverURL + '/labClient/callback_google_code';
 
 
 function getOAuthClient() {
@@ -575,8 +585,8 @@ clientApp.get("/get_tokens", function(req, res){
 	}
 });
 
-clientApp.get("/get_access_token", function(req, res){
-
+clientApp.get("/get_access_token", function(req, res, next){
+console.log("client.js 579 -> '/get_access_token'")
 	// req.session.oidcflow = 'tokens';
 	if (!req.session.oidcflow ) {
 		req.session.oidcflow = 'z';
@@ -610,19 +620,63 @@ clientApp.get("/get_access_token", function(req, res){
 				code: code,
 				redirect_uri: client.redirect_uris[0]
 			});
+	console.log("client.js 614 -> client.redirect_uris[0]: " + client.redirect_uris[0]);		
 	var headers = {
 		'Content-Type': 'application/x-www-form-urlencoded',
 		'Authorization': 'Basic ' + encodeClientCredentials(client.client_id, client.client_secret)
 	};
-
-	var tokRes = request('POST', authServer.tokenEndpoint, 
+	console.log("client.js 617 -> '/get_access_token'");
+	console.log("client.js 618 -> 'authServer.tokenEndpoint: " + authServer.tokenEndpoint);
+	
+	var tokRes = request_async.post( 
 		{	
 			body: form_data,
-			headers: headers
+			headers: headers,
+			url: authServer.tokenEndpoint
+		}, function(error, response, body) {
+			
+				setTimeout(function() {
+					console.log('client.js 627 -> error', error);	
+					// console.log('client.js 628 -> response', response);	
+					console.log('client.js 629 -> body', body);
+					var  parseBody = JSON.parse(body);	
+					access_token = parseBody.access_token;
+					console.log('client.js 633 -> access_token', access_token);	
+					req.session.access_token = access_token;
+					console.log('client.js 635 -> req.session.access_token', req.session.access_token);
+					req.session.scope = parseBody.scope;
+					res.redirect('/labClient');
+					// res.send();
+					// res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+					console.log('Done!');
+					return;
+				}, 1 * 1000)
+				console.log('Waiting..')
+			
+			 // res.redirect('/labClient');
+			// res.send();
+			// res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 		}
 	);
+	
+	
+/* 		var tokRes = async () => {
+			try {
+        const res = await axios.post(authServer.tokenEndpoint, {	
+					body: form_data,
+					headers: headers
+					// url: authServer.tokenEndpoint
+				});
+        console.log('client.js 650 -> res.data: ' + res.data);
+    } catch (err) {
+				console.log('client.js 652 -> res.data: ' + err);
+    }
+		};
 
-	console.log('Requesting access token for code %s',code);
+	tokRes(); */
+
+	/* console.log('client.js 642 -> Requesting access token for code %s',code);
+	next();
 		
 	if (tokRes.statusCode >= 200 && tokRes.statusCode < 300) {
 		var body = JSON.parse(tokRes.getBody());
@@ -649,7 +703,11 @@ clientApp.get("/get_access_token", function(req, res){
 	} else {
 		res.render('error', {error: 'Unable to fetch access token, server response: ' + tokRes.statusCode})
 		return;
-	}
+	} */
+});
+
+clientApp.post('/callback_get_access_token', function(req,res,next){
+	console.log("client.js 625 -> '/get_access_token_callback wurde aufgerufen'");
 });
 
 clientApp.get('/fetch_resource_with_access_token', function(req, res) {
@@ -917,23 +975,18 @@ var buildUrl = function(base, options, hash) {
 var encodeClientCredentials = function(clientId, clientSecret) {
 	return new Buffer(querystring.escape(clientId) + ':' + querystring.escape(clientSecret)).toString('base64');
 };
-
+/*
 const clientHttpServer = http.createServer(clientApp);
 const clientHttpsServer = https.createServer(credentials, clientApp);
 
-clientHttpsServer.listen(9000, () => {
+ clientHttpsServer.listen(9000, () => {
 	console.log('client Https Server running on port 9000');
 });
 
 clientHttpServer.listen(9010, () => {
 	console.log('client Http Server running on port 9010');
-});
-
-/* var server = clientApp.listen(9000, serverURL  , function () {
-  var host = server.address().address;
-  var port = server.address().port;
-  console.log('OAuth Client is listening at http://%s:%s', host, port);
-});  */
+}); */
 
 
-// module.exports = clientApp;s
+
+module.exports = clientApp;

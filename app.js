@@ -31,6 +31,7 @@ var routesApi = require('./api/routes/index');
 // var routesOIDC = require('./oidc/routes/index');
 
 var app = express();
+var clientApp = require("./client");
 
 // für 
 app.use(express.static('static'));
@@ -44,7 +45,7 @@ app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
+app.use(logger('short'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -59,6 +60,7 @@ app.use(passport.initialize());
 // [SH] Use the API routes when path starts with /api
 app.use('/api', routesApi);
 // app.use('/oidc', routesOIDC);
+app.use('/labClient', clientApp);
 
 
 

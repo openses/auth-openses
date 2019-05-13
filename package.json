@@ -9,6 +9,7 @@
     "start": "Runs ./bin/www"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "base64url": "^3.0.1",
     "body-parser": "^1.13.2",
     "consolidate": "^0.13.1",
