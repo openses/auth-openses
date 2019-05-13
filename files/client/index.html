@@ -78,14 +78,16 @@
       </span><br>
       <br>
       <a class="btn btn-default" href="/labClient/get_id_token">3.1 Get ID Token from Authorization Server</a>
-       ID Token (JSON Web Token / JWT): 
+       ID Token (JSON Web Token / JWT):<br>
           <% if (id_token && oidcflow.includes('d')) { %> 
-            <pre>
-                <span class="label label-danger" style="font-size:12pt"><%- id_token %></span>
-            </pre>
+            <!-- <pre> -->
+                <!-- <span class="label label-danger" style="font-size:12pt"> -->
+                    <textarea style="background-color:#FF0000;color:#FFFFFF" rows="4" cols="80"><%- id_token %></span></textarea>
+              
+            <!-- </pre> -->
             <% } else { %>
-            <span class="label label-danger">NONE</span>
-          <% } %><br>
+            <!-- <span class="label label-danger">NONE</span> -->
+          <% } %>
       <br>
       <a class="btn btn-default" href="/labClient/decode_jwt">3.2 Decode ID Token</a> Logged in User Subject: <span class="label label-danger"><%- (sub && oidcflow.includes('e')) ? sub : 'NONE' %></span> from Issuer: <span class="label label-danger"><%- (iss && oidcflow.includes('e')) ? iss : 'NONE' %></span><br>
       <br>

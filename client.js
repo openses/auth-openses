@@ -634,80 +634,32 @@ console.log("client.js 579 -> '/get_access_token'")
 			headers: headers,
 			url: authServer.tokenEndpoint
 		}, function(error, response, body) {
-			
-				setTimeout(function() {
-					console.log('client.js 627 -> error', error);	
+				// setTimeout(function() {
+				//console.log('Begin Timeout');
+					console.log('client.js 627 -> error', error);
+				if (!error) {	
 					// console.log('client.js 628 -> response', response);	
 					console.log('client.js 629 -> body', body);
-					var  parseBody = JSON.parse(body);	
+					var  parseBody = JSON.parse(body);
+					req.session.body = 	parseBody;
 					access_token = parseBody.access_token;
 					console.log('client.js 633 -> access_token', access_token);	
 					req.session.access_token = access_token;
 					console.log('client.js 635 -> req.session.access_token', req.session.access_token);
 					req.session.scope = parseBody.scope;
 					res.redirect('/labClient');
-					// res.send();
-					// res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-					console.log('Done!');
+				//console.log('Done Tmeout!');
 					return;
-				}, 1 * 1000)
-				console.log('Waiting..')
-			
-			 // res.redirect('/labClient');
-			// res.send();
-			// res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+			  //	}, 1 * 1000)
+				// console.log('Waiting Timeout...')
+				} else {
+					req.session.access_token = null;
+					req.session.scope = null;
+					res.render('error', {error: 'Post request returned error: ' + error});
+					return;
+				}
 		}
 	);
-	
-	
-/* 		var tokRes = async () => {
-			try {
-        const res = await axios.post(authServer.tokenEndpoint, {	
-					body: form_data,
-					headers: headers
-					// url: authServer.tokenEndpoint
-				});
-        console.log('client.js 650 -> res.data: ' + res.data);
-    } catch (err) {
-				console.log('client.js 652 -> res.data: ' + err);
-    }
-		};
-
-	tokRes(); */
-
-	/* console.log('client.js 642 -> Requesting access token for code %s',code);
-	next();
-		
-	if (tokRes.statusCode >= 200 && tokRes.statusCode < 300) {
-		var body = JSON.parse(tokRes.getBody());
-		req.session.body = body;
-		access_token = body.access_token;
-		req.session.access_token = access_token;
-		console.log('Got access token: %s', access_token);
-		outputClient = outputClient + "access token: %s" + access_token  + "<br>";
-		if (body.refresh_token) {
-			refresh_token = body.refresh_token;
-			req.session.refresh_token = refresh_token;
-			console.log('Got refresh token: %s', refresh_token);
-		}
-
-		scope = body.scope;
-		req.session.scope = scope;
-		console.log('Got scope: %s', scope);
-		outputClient = outputClient + "scope: %s" + scope  + "<br>";
-		
-		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope});
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-		return;
-
-	} else {
-		res.render('error', {error: 'Unable to fetch access token, server response: ' + tokRes.statusCode})
-		return;
-	} */
-});
-
-clientApp.post('/callback_get_access_token', function(req,res,next){
-	console.log("client.js 625 -> '/get_access_token_callback wurde aufgerufen'");
 });
 
 clientApp.get('/fetch_resource_with_access_token', function(req, res) {
@@ -734,27 +686,29 @@ clientApp.get('/fetch_resource_with_access_token', function(req, res) {
 		'Content-Type': 'application/x-www-form-urlencoded',
 		'fetch_resource_with_access_token': 'true'
 	};
-	
 
-	console.log('headers %s', headers.fetch_resource_with_access_token);
-	var resource = request('POST', protectedResource,
-		{headers: headers, 'fetch_resource_with_access_token': 'true'}
+	console.log('client.js 682 headers %s', headers.fetch_resource_with_access_token);
+
+	var resource = request_async.post( 
+		{	
+			headers: headers,
+			'fetch_resource_with_access_token': 'true', 
+			url: protectedResource
+		}, function(error, response, body) {
+					console.log('client.js 696 -> error: ', error);
+					if (!error) { 
+						console.log('client.js 697 -> body', body);
+						var  parseBody = JSON.parse(body);	
+						req.session.protectedResourceVar_with_access_token = parseBody;
+						res.redirect('/labClient');
+						return;
+					}	else {
+						req.session.protectedResourceVar_with_access_token = null;
+						res.render('error', {error: 'Post request returned error: ' + error});
+						return;
+					}
+		}
 	);
-	
-	if (resource.statusCode >= 200 && resource.statusCode < 300) {
-		var body = JSON.parse(resource.getBody());
-		protectedResourceVar_with_access_token = body;
-		console.log('protectedResourceVar_with_access_token %s', protectedResourceVar_with_access_token);
-		req.session.protectedResourceVar_with_access_token = protectedResourceVar_with_access_token;
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-		return;
-	} else {
-		access_token = null;
-		req.session.access_token = access_token;
-		res.render('error', {error: 'Server returned response code: ' + resource.statusCode});
-		return;
-	}
-	
 });
 
 clientApp.get("/get_id_token", function(req, res){
@@ -872,36 +826,38 @@ clientApp.get('/userinfo', function(req, res) {
 	var access_token = req.session.access_token;
 	var id_token = req.session.id_token
 	// var profile = null;
-	
 
 	var headers = {
 		'Authorization': 'Bearer ' + access_token
 	};
-	
-	var resource = request('GET', authServer.userInfoEndpoint,
-		{headers: headers}
+
+	var userInfo = request_async.get( 
+		{	
+			headers: headers,
+			url: authServer.userInfoEndpoint
+		}, function(error, response, body) {
+					console.log('client.js 846 -> error: ', error);
+					if (!error) { 
+						console.log('client.js 846 -> body', body);
+						var  parseBody = JSON.parse(body);	
+						req.session.userInfo = parseBody;
+						console.log('client.js 848 -> parseBody.userInfo', parseBody.userInfo);
+						req.session.profile = parseBody.profile;
+						console.log('client.js 848 -> parseBody.profile', parseBody.profile);
+						req.session.credentials = parseBody.credentials;
+						req.session.permission = parseBody.permission;
+						res.redirect('/labClient');
+						return;
+					}	else {
+						req.session.userInfo = null;
+						req.session.profile = null;
+						req.session.credentials = null;
+						req.session.permission = null;
+						res.render('error', {error: 'Post request returned error: ' + error});
+						return;
+					}
+		}
 	);
-	if (resource.statusCode >= 200 && resource.statusCode < 300) {
-		var body = JSON.parse(resource.getBody());
-		console.log('Got data: ', body);
-		// protectedResource = resource;
-	
-		userInfo = body;
-		req.session.userInfo = userInfo;
-		req.session.profile = body.profile;
-		req.session.credentials = body.credentials;
-		req.session.permission = body.permission;
-		console.log('profile: ', body.profile);
-		console.log('req.session.permission: ', req.session.permission);
-		console.log('req.session.credentials: ', req.session.credentials);
-	
-		// res.render('userinfo', {userInfo:  userInfo, id_token: id_token});
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-		return;
-	} else {
-		res.render('error', {error: 'Unable to fetch user information'});
-		return;
-	}
 });
 
 clientApp.get('/fetch_resource', function(req, res) {
@@ -928,24 +884,26 @@ clientApp.get('/fetch_resource', function(req, res) {
 		'Content-Type': 'application/x-www-form-urlencoded',
 		'permission': req.session.permission
 	};
-	
-	var resource = request('POST', protectedResource,
-		{headers: headers}
+
+	var Resource = request_async.post( 
+		{	
+			headers: headers,
+			url: protectedResource
+		}, function(error, response, body) {
+					console.log('client.js 893 -> error: ', error);
+					if (!error) { 
+						console.log('client.js 895 -> body', body);
+						var  parseBody = JSON.parse(body);	
+						req.session.protectedResourceVar = parseBody;
+						res.redirect('/labClient');
+						return;
+					}	else {
+						req.session.protectedResourceVar = null;
+						res.render('error', {error: 'Post request returned error: ' + error});
+						return;
+					}
+		}
 	);
-	
-	if (resource.statusCode >= 200 && resource.statusCode < 300) {
-		var body = JSON.parse(resource.getBody());
-		protectedResourceVar = body;
-		req.session.protectedResourceVar = protectedResourceVar;
-		res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
-		return;
-	} else {
-		access_token = null;
-		req.session.access_token = access_token;
-		res.render('error', {error: 'Server returned response code: ' + resource.statusCode});
-		return;
-	}
-	
 });
 
 clientApp.get("/sign_out_destroy_session", function(req, res){
