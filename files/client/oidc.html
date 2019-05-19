@@ -30,7 +30,7 @@
       <div class="container">
         <div class="navbar-header">
           <a target="_blank" class="navbar-brand" href="http://eidlab.ch"><img _ngcontent-c0="" alt="Identity Federation Playground / eIdLab.ch" src="/toolbar_logo.png"></a>
-          <a target="_blank" class="navbar-brand" href="http://client.eidlab.ch"><span class="label label-primary">Go To Client/Relying Part Server</span></a>
+          <a target="_blank" class="navbar-brand" href="https://www.innoedu.ch/labClient"><span class="label label-primary">Go To Client/Relying Part Server</span></a>
         </div>
         <br><br><br>
       </div>
@@ -52,16 +52,16 @@
               <textarea style="background-color:#FF0000;color:#FFFFFF" rows="1" cols="80">sub: <%= (oidc_jwt_sub) ? oidc_jwt_sub : 'None'%></textarea><br>
               <br>
               <br>
-              <a class="btn btn-default" href="/fetch_resource_oidc">Get Data from the Protected Resource (Based on OpenID Connect User Information)</a><br> 
+              <a class="btn btn-default" href="/labClient/fetch_resource_oidc">Get Data from the Protected Resource (Based on OpenID Connect User Information)</a><br> 
               <br>
               Data from the Protected Resource:<br>
               <textarea style="background-color:#FF0000;color:#FFFFFF" rows="1" cols="80"><%= (data) ? data : 'None'%></textarea><br>
               <br>
               <br>
               <!-- Logout azure -->
-              <!-- <a class="btn btn-default" href="https://www.innoedu.ch:3010/oidc/session/end">Logout from OpenID Connect</a><br> -->
+              <a class="btn btn-default" href="https://www.innoedu.ch:3010/oidc/session/end">Logout from OpenID Connect</a><br>
               <!-- Logout local -->
-              <a class="btn btn-default" href="http://127.0.0.1:3000/oidc/session/end">Logout from OpenID Connect</a><br>
+              <!-- <a class="btn btn-default" href="https://127.0.0.1:3010/oidc/session/end">Logout from OpenID Connect</a><br> -->
             </form>
          <br>
       </div>

@@ -17,18 +17,18 @@ var cors = require('cors');
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
-/* serverURL = 'www.innoedu.ch';
+serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9001';
-var port_9002_or_9012 = ':9002'; */
+var port_9002_or_9012 = ':9002';
 
 
-serverURL = 'localhost';
+/* serverURL = 'localhost';
 var http_or_https = 'http://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9011';
-var port_9002_or_9012 = ':9012'; 
+var port_9002_or_9012 = ':9012'; */ 
 
 
 var protectedResource = {

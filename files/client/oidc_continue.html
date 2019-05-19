@@ -30,7 +30,7 @@
       <div class="container">
         <div class="navbar-header">
           <a target="_blank" class="navbar-brand" href="http://eidlab.ch"><img _ngcontent-c0="" alt="Identity Federation Playground / eIdLab.ch" src="/toolbar_logo.png"></a>
-          <a target="_blank" class="navbar-brand" href="http://client.eidlab.ch"><span class="label label-primary">Go To Client/Relying Part Server</span></a>
+          <a target="_blank" class="navbar-brand" href="https://www.innoedu.ch/labClient"><span class="label label-primary">Go To Client/Relying Part Server</span></a>
         </div>
         <br><br><br>
       </div>
@@ -44,8 +44,8 @@
         Granted Scopes for eIdLab.ch: openid <br>
         <br>
           <br>
-         <a class="btn btn-warning" href="/callback_oidc_continue">Continue with <%- (jwt_sub) %></a><br>
-         
+         <!-- <a class="btn btn-warning" href="/callback_oidc_continue">Continue with <%- (jwt_sub) %></a><br> -->
+         <a class="btn btn-warning" href="/labClient/callback_oidc_continue">Continue with <%- (jwt_sub) %></a><br>
       </div>
     </div><!-- /.container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

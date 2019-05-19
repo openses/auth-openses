@@ -19,6 +19,8 @@ const https = require('https'), fs = require('fs') /* , helmet = require('helmet
 var jwtDecode = require('jwt-decode');
 const {google} = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
+var logger = require('morgan');
+var router = express.Router();
 /* var FB = require('fb').default;
 
 FB.init({
@@ -39,22 +41,23 @@ const credentials = {
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
-/* serverURL = 'www.innoedu.ch';
+serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
-var port_9000_or_9010 = '/labClient'';
+var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9001';
-var port_9002_or_9012 = ':9002'; */
+var port_9002_or_9012 = ':9002';
 
 
-serverURL = 'localhost';
+/* serverURL = 'localhost';
 var http_or_https = 'http://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9011';
-var port_9002_or_9012 = ':9012';
+var port_9002_or_9012 = ':9012'; */
 
 
 
 var clientApp = express();
+clientApp.use(logger('short'));
 
 clientApp.use(session({secret: "xcerats24srw"}));
 
@@ -408,13 +411,14 @@ clientApp.get("/callback_facebook_continue", function(req, res){
 });
 
 clientApp.get("/callback_oidc_continue", function(req, res){
+	console.log('client.js 411');
 	res.render('oidc', {code: req.session.oidc_code, access_token: req.session.oidc_access_token, oidc_jwt_sub: req.session.oidc_jwt_sub, data: null });
 });
 
 clientApp.get("/callback_google_continue", function(req, res){
-	var permissions = request('GET', 'https://graph.facebook.com/me/permissions?&access_token=' + req.session.facebook_access_token,
+	/* var permissions = request('GET', 'https://graph.facebook.com/me/permissions?&access_token=' + req.session.facebook_access_token,
 	req.body
-	);
+	); */
 	res.render('google', {code: req.session.google_code, access_token: req.session.google_access_token, google_jwt_payload_sub: JSON.stringify(req.session.google_jwt_payload.sub), google_jwt_payload_name: JSON.stringify(req.session.google_jwt_payload.name),google_jwt_payload_email: JSON.stringify(req.session.google_jwt_payload.email), data: null });
 });
 
