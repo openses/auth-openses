@@ -23,6 +23,7 @@ const {google} = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 var logger = require('morgan');
 var router = express.Router();
+const expressip = require('express-ip');
 /* var FB = require('fb').default;
 
 FB.init({
@@ -43,18 +44,18 @@ const credentials = {
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
-serverURL = 'www.innoedu.ch';
+/* serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9001';
 var port_9002_or_9012 = ':9002';
+ */
 
-
-/* serverURL = 'localhost';
+serverURL = 'localhost';
 var http_or_https = 'http://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9011';
-var port_9002_or_9012 = ':9012'; */
+var port_9002_or_9012 = ':9012';
 
 
 
@@ -76,8 +77,8 @@ var store = new MongoDBStore({
 clientApp.use(session({
 	secret: "xcerats24srw",
 	store: store,
-  resave: false,
-  saveUninitialized: false
+  resave: true,
+  saveUninitialized: true
 }));
 
 clientApp.use(bodyParser.json());
@@ -116,9 +117,19 @@ var protectedResource = http_or_https + serverURL + port_9002_or_9012 + '/resour
 
 var state = null;
 
+clientApp.use(expressip().getIpInfoMiddleware);
+
+var today = new Date();
+var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
 clientApp.get('/', function (req, res, next) {
-	console.log("client.js 98 -> 'req.session.render_code: " + req.session.render_code);
-	console.log("client.js 99 -> 'req.session.access_token: " + req.session.access_token);
+	req.session.ipInfoTest = req.ipInfo;
+	req.session.currentTimeStamp = date + ' / ' + time;
+	// console.log("client.js 125 -> 'req.session.ipInfo: " + JSON.parse(req.session.ipInfo));
+	console.log("client.js 126 -> 'req.session.currentTimeStamp: " + req.session.currentTimeStamp);
+	console.log("client.js 127 -> 'req.session.render_code: " + req.session.render_code);
+	console.log("client.js 128 -> 'req.session.access_token: " + req.session.access_token);
 	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 });
 

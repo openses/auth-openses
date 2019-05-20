@@ -7,8 +7,8 @@ set -m
 node ./bin/www &
 
 # Start the helper process
-# DEBUG=* node ./client.js 
-node ./client.js 
+DEBUG=* node ./client.js 
+# node ./client.js 
 
 # the my_helper_process might need to know how to wait on the
 # primary process to start before it does its work and returns
