@@ -64,13 +64,14 @@
       Preparation:
       &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="/labClient/sign_out_destroy_session">Clean Tokens and Destroy Sessions</a><br>
       <br>
-      <a class="btn btn-default" href="/labClient/authorize">1 Sign In with the eIdLab Authorization Server => Approve this Client and Scope => Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
+      <a class="btn btn-default" href="/labClient/authorize">1 Sign In with the eIdLab Authorization Server* => Approve this Client and Scope => Get Code</a> Code: <span class="label label-danger"><%= (render_code && oidcflow.includes('a')) ? render_code : 'NONE' %></span><br>
+      *The user credentials are hidden for further steps<br>
       <br>
       <a class="btn btn-default" href="/labClient/get_access_token">2.1 Get Access (Refresh) Token and Scope from Authorization Server</a>
         Access Token: <span class="label label-danger"><%- (access_token && oidcflow.includes('b')) ? access_token : 'NONE' %></span>
         Refresh token value: <span class="label label-danger"><%- (refresh_token && oidcflow.includes('b')) ? refresh_token : 'NONE' %></span>
         Scope: <span class="label label-danger"><%- (scope && oidcflow.includes('b')) ? scope : 'NONE' %></span><br><br>
-      <a class="btn btn-default" href="/labClient/fetch_resource_with_access_token">2.2 Get Data from Protected Resource without UserID</a> 
+      <a class="btn btn-default" href="/labClient/fetch_resource_with_access_token">2.2 Get Data from Protected Resource with Access Token (Anonymous Session)</a> 
       Data from Protected Resource:
       <span class="label label-warning">
  
@@ -126,7 +127,7 @@
           <% } %>
         <br>
         <br>
-        <a class="btn btn-default" href="/labClient/fetch_resource">3.4 Get Data from Protected Resource (based on Scope and ID Token)</a> Data from Protected Resource:
+        <a class="btn btn-default" href="/labClient/fetch_resource">3.4 Get Data from Protected Resource with ID Token (Authenticated Session)</a> Data from Protected Resource:
         <% if (resource && oidcflow.includes('g')) { %> 
             <ul style="background-color:#F0AD4E;color:white">
                 Data owner: <%- userInfo.name %><br>

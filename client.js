@@ -1,5 +1,7 @@
 var express = require("express");
 var session = require('express-session');
+// var MySQLStore = require('express-mysql-session')(session);
+var MongoDBStore = require('connect-mongodb-session')(session);
 var bodyParser = require('body-parser');
 var request = require("sync-request");
 var request_async = require("request");
@@ -59,7 +61,24 @@ var port_9002_or_9012 = ':9012'; */
 var clientApp = express();
 clientApp.use(logger('short'));
 
-clientApp.use(session({secret: "xcerats24srw"}));
+const dbuser = process.env.DB_USER;
+const dbpassword = process.env.DB_PASSWORD;
+const db_host = process.env.DB_HOST;
+
+const dbURI = "mongodb://" + dbuser + ":" + dbpassword + db_host;
+
+var store = new MongoDBStore({
+	uri: dbURI,
+  collection: 'eidlabSessions'
+});
+
+// clientApp.use(session({secret: "xcerats24srw"}));
+clientApp.use(session({
+	secret: "xcerats24srw",
+	store: store,
+  resave: false,
+  saveUninitialized: false
+}));
 
 clientApp.use(bodyParser.json());
 clientApp.use(bodyParser.urlencoded({ extended: true }));
@@ -911,6 +930,13 @@ clientApp.get('/fetch_resource', function(req, res) {
 });
 
 clientApp.get("/sign_out_destroy_session", function(req, res){
+	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+		req.session.destroy();
+		res.redirect('/labClient/sign_out_destroy_session_2');
+		//return;
+});
+
+clientApp.get("/sign_out_destroy_session_2", function(req, res){
 	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 		req.session.destroy();
 		return;
