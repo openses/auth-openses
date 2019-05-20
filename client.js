@@ -23,7 +23,7 @@ const {google} = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 var logger = require('morgan');
 var router = express.Router();
-const expressip = require('express-ip');
+// const expressip = require('express-ip');
 /* var FB = require('fb').default;
 
 FB.init({
@@ -44,18 +44,18 @@ const credentials = {
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
-/* serverURL = 'www.innoedu.ch';
+serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9001';
 var port_9002_or_9012 = ':9002';
- */
 
-serverURL = 'localhost';
+
+/* serverURL = 'localhost';
 var http_or_https = 'http://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9011';
-var port_9002_or_9012 = ':9012';
+var port_9002_or_9012 = ':9012'; */
 
 
 
@@ -117,14 +117,14 @@ var protectedResource = http_or_https + serverURL + port_9002_or_9012 + '/resour
 
 var state = null;
 
-clientApp.use(expressip().getIpInfoMiddleware);
+// clientApp.use(expressip().getIpInfoMiddleware);
 
 var today = new Date();
 var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
 var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
 clientApp.get('/', function (req, res, next) {
-	req.session.ipInfoTest = req.ipInfo;
+	// req.session.ipInfoTest = req.ipInfo;
 	req.session.currentTimeStamp = date + ' / ' + time;
 	// console.log("client.js 125 -> 'req.session.ipInfo: " + JSON.parse(req.session.ipInfo));
 	console.log("client.js 126 -> 'req.session.currentTimeStamp: " + req.session.currentTimeStamp);
