@@ -17,18 +17,18 @@ var md5 = require('md5');
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
-serverURL = 'www.innoedu.ch';
+/* serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9001';
-var port_9002_or_9012 = ':9002';
+var port_9002_or_9012 = ':9002'; */
 
 
-/* serverURL = 'localhost';
+serverURL = 'localhost';
 var http_or_https = 'http://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9011';
-var port_9002_or_9012 = ':9012'; */
+var port_9002_or_9012 = ':9012';
 
 
 
@@ -45,7 +45,9 @@ authorizationServerApp.set('json spaces', 4);
 // authorization server information
 var authServer = {
 	authorizationEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/authorize',
-	tokenEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/token'
+	tokenEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/token',
+	approveEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/approve',
+	clientRegisterEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/register'
 };
 
 // client information
@@ -427,6 +429,180 @@ authorizationServerApp.post("/token", function(req, res){
 		console.log('Unknown grant type %s', req.body.grant_type);
 		res.status(400).json({error: 'unsupported_grant_type'});
 	}
+});
+
+var checkClientMetadata = function(req, res) {
+	var reg = {};
+
+	if (!req.body.token_endpoint_auth_method) {
+		reg.token_endpoint_auth_method = 'secret_basic';	
+	} else {
+		reg.token_endpoint_auth_method = req.body.token_endpoint_auth_method;
+	}
+	
+	if (!__.contains(['secret_basic', 'secret_post', 'none'], reg.token_endpoint_auth_method)) {
+		res.status(400).json({error: 'invalid_client_metadata'});
+		return;
+	}
+	
+	if (!req.body.grant_types) {
+		if (!req.body.response_types) {
+			reg.grant_types = ['authorization_code'];
+			reg.response_types = ['code'];
+		} else {
+			reg.response_types = req.body.response_types;
+			if (__.contains(req.body.response_types, 'code')) {
+				reg.grant_types = ['authorization_code'];
+			} else {
+				reg.grant_types = [];
+			}
+		}
+	} else {
+		if (!req.body.response_types) {
+			reg.grant_types = req.body.grant_types;
+			if (__.contains(req.body.grant_types, 'authorization_code')) {
+				reg.response_types =['code'];
+			} else {
+				reg.response_types = [];
+			}
+		} else {
+			reg.grant_types = req.body.grant_types;
+			reg.reponse_types = req.body.response_types;
+			if (__.contains(req.body.grant_types, 'authorization_code') && !__.contains(req.body.response_types, 'code')) {
+				reg.response_types.push('code');
+			}
+			if (!__.contains(req.body.grant_types, 'authorization_code') && __.contains(req.body.response_types, 'code')) {
+				reg.grant_types.push('authorization_code');
+			}
+		}
+	}
+
+	if (!__.isEmpty(__.without(reg.grant_types, 'authorization_code', 'refresh_token')) ||
+		!__.isEmpty(__.without(reg.response_types, 'code'))) {
+		res.status(400).json({error: 'invalid_client_metadata'});
+		return;
+	}
+
+	if (!req.body.redirect_uris || !__.isArray(req.body.redirect_uris) || __.isEmpty(req.body.redirect_uris)) {
+		res.status(400).json({error: 'invalid_redirect_uri'});
+		return;
+	} else {
+		reg.redirect_uris = req.body.redirect_uris;
+	}
+	
+	if (typeof(req.body.client_name) == 'string') {
+		reg.client_name = req.body.client_name;
+	}
+	
+	if (typeof(req.body.client_uri) == 'string') {
+		reg.client_uri = req.body.client_uri;
+	}
+	
+	if (typeof(req.body.logo_uri) == 'string') {
+		reg.logo_uri = req.body.logo_uri;
+	}
+	
+	if (typeof(req.body.scope) == 'string') {
+		reg.scope = req.body.scope;
+	}
+	
+	return reg;
+};
+
+authorizationServerApp.post('/register', function (req, res){
+	console.log('513')
+	var reg = checkClientMetadata(req, res);
+	if (!reg) {
+		return;
+	}
+	
+	reg.client_id = randomstring.generate();
+	if (__.contains(['client_secret_basic', 'client_secret_post']), reg.token_endpoint_auth_method) {
+		reg.client_secret = randomstring.generate();
+	}
+	
+	reg.client_id_created_at = Math.floor(Date.now() / 1000);
+	reg.client_secret_expires_at = 0;
+
+	reg.registration_access_token = randomstring.generate();
+	reg.registration_client_uri = 'http://localhost:9001/register/' + reg.client_id;
+
+	clients.push(reg);
+	
+	res.status(201).json(reg);
+	return;
+});
+
+var authorizeConfigurationEndpointRequest = function (req, res, next) {
+	var clientId = req.params.clientId;
+	var client = getClient(clientId);
+	if (!client) {
+		res.status(404).end();
+		return;
+	}
+
+	var auth = req.headers['authorization'];
+	if (auth && auth.toLowerCase().indexOf('bearer') == 0) {
+		var regToken = auth.slice('bearer '.length);
+
+		if (regToken == client.registration_access_token) {
+			req.client = client;
+			next();
+			return;
+		} else {
+			res.status(403).end();
+			return;
+		}
+		
+	} else {
+		res.status(401).end();
+		return;
+	}
+
+};
+
+authorizationServerApp.get('/register/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
+	res.status(200).json(req.client);
+	return;
+});
+
+authorizationServerApp.put('/register/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
+
+	if (req.body.client_id != req.client.client_id) {
+		res.status(400).json({error: 'invalid_client_metadata'});
+		return;
+	}
+	
+	if (req.body.client_secret && req.body.client_secret != req.client.client_secret) {
+		res.status(400).json({error: 'invalid_client_metadata'});
+	}
+
+	var reg = checkClientMetadata(req, res);
+	if (!reg) {
+		return;
+	}
+
+	__.each(reg, function(value, key, list) {
+		req.client[key] = reg[key];
+	});
+
+	res.status(200).json(req.client);
+	return;
+});
+
+authorizationServerApp.delete('/register/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
+	clients = __.reject(clients, __.matches({client_id: req.client.client_id}));
+
+	nosql.remove(function(token) {
+		if (token.client_id == req.client.client_id) {
+			return true;	
+		}
+	}, function(err, count) {
+		console.log("Removed %s clients", count);
+	});
+	
+	res.status(204).end();
+	return;
 });
 
 var buildUrl = function(base, options, hash) {

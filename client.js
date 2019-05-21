@@ -44,18 +44,18 @@ const credentials = {
 // in files/client/oidc.html Zeile 61 bis 64 switch local/azure -> redirect
 
 
-serverURL = 'www.innoedu.ch';
+/* serverURL = 'www.innoedu.ch';
 var http_or_https = 'https://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9001';
-var port_9002_or_9012 = ':9002';
+var port_9002_or_9012 = ':9002'; */
 
 
-/* serverURL = 'localhost';
+serverURL = 'localhost';
 var http_or_https = 'http://';
 var port_9000_or_9010 = '/labClient';
 var port_9001_or_9011 = ':9011';
-var port_9002_or_9012 = ':9012'; */
+var port_9002_or_9012 = ':9012';
 
 
 
@@ -100,9 +100,11 @@ var client = {
 
 // authorization server information
 var authServer = {
-	authorizationEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/authorize',
+	authorizationEndpoint: http_or_https + serverURL + port_9001_or_9011 + '/authorize',
 	tokenEndpoint: http_or_https + serverURL + port_9001_or_9011 + '/token',
-	userInfoEndpoint: http_or_https + serverURL + port_9002_or_9012 +'/userinfo'
+	userInfoEndpoint: http_or_https + serverURL + port_9002_or_9012 + '/userinfo',
+	approveEndpoint: http_or_https + serverURL + port_9001_or_9011 + '/approve',
+	clientRegisterEndpoint: http_or_https + serverURL + port_9001_or_9011 + '/register'
 };
 
 var rsaKey = {
@@ -952,6 +954,45 @@ clientApp.get("/sign_out_destroy_session_2", function(req, res){
 		req.session.destroy();
 		return;
 });
+
+clientApp.get('/registerClientView', function(req, res){
+	res.render('registerClient', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+});
+
+clientApp.get('/registerClient', function(req, res){
+	console.log("963");
+	var template = {
+		client_name: 'eIdLab.ch OAuth Dynamic Test Client',
+		client_uri: 'http://localhost/labClient/',
+		redirect_uris: ['http://localhost/labClient/callback'],
+		grant_types: ['authorization_code'],
+		response_types: ['code'],
+		token_endpoint_auth_method: 'secret_basic',
+		scope: 'foo bar'
+	};
+	var headers = {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json'
+	};
+
+	console.log("978");
+	console.log("979 " + authServer.clientRegisterEndpoint);
+	
+	var regRes = request_async.post(
+		{
+			body: JSON.stringify(template),
+			headers: headers,
+			url: authServer.clientRegisterEndpoint
+	}, function(error, response, body) {
+		console.log('987 -> error', error);
+			var parseRegistrationBody = JSON.parse(body);
+			req.session.parseRegistrationBody = parseRegistrationBody;
+			console.log(parseRegistrationBody);
+		console.log("Got registered client", parseRegistrationBody);
+		}
+	);
+});
+
 
 clientApp.use('/', express.static('files/client'));
 
