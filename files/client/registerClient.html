@@ -42,17 +42,31 @@
 
       <div class="jumbotron">
       <p>This page represents the  <span class="label label-primary">Dynamic Client Registration and Client Managing Page</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
-      <hr>
-      Interactive <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> Dynamic Client Registration* and Client Managing Flow:<br>
-      *Notice: The registered Clients are only stored temporarily in memory during the session.<br><br>
-      Preparation:
-      &nbsp;	&nbsp;	&nbsp;<a class="btn btn-default" href="/labClient/sign_out_destroy_session">Clean Tokens and Destroy Sessions</a><br>
       <br>
-          <br>
-      <!-- *This feature will be implemented later in a new Client HTML View. -->
-      <a class="btn btn-default" href="/labClient/registerClient">1 Register new Client/Relying Party*</a><br>
-      *Webfinger Discovery and User Managed Access (UMA) will be implemented later in a new Client HTML View.<br>
-      Note: You can view all registered Clients in the Authorization Server.
+      The registered Clients are only stored temporarily in memory during the session. All registered clients are displayed in the authorization server.<br>
+      <hr>
+             
+      <form class="form" action="/registerClient" method="POST">
+				New Client Registration Name:&nbsp;&nbsp;&nbsp;<input type="text" name="dynamicclient" placeholder="clientname">
+			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="OK">
+       </form>
+       <hr>
+       <form class="form" action="/changeClient" method="POST">
+				Change Client Registration Name:&nbsp;&nbsp;&nbsp;ClientID -> .......&nbsp;&nbsp;&nbsp; <input type="text" name="changedynamicclient" placeholder="changeclientname">
+			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-warning" name="register" value="OK">
+       </form>
+       <hr>
+       <form class="form" action="/deleteClient" method="POST">
+				Delete Client Registration Name:&nbsp;&nbsp;&nbsp;ClientID -> .......&nbsp;&nbsp;&nbsp; <input type="text" name="deletedynamicclient" placeholder="deleteclientname">
+			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-danger" name="register" value="OK">
+       </form>
+       <hr>
+<br>
+
+
+      &nbsp;&nbsp;
+      <br>
+          
       </div>
     </div><!-- /.container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
