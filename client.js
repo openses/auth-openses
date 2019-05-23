@@ -956,7 +956,7 @@ clientApp.get("/sign_out_destroy_session_2", function(req, res){
 });
 
 clientApp.get('/registerClientView', function(req, res){
-	res.render('registerClient', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
+	res.redirect(http_or_https + serverURL + port_9001_or_9011 + '/registerClientView');
 });
 
 clientApp.get('/registerClient', function(req, res){

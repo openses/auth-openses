@@ -509,6 +509,10 @@ var checkClientMetadata = function(req, res) {
 	return reg;
 };
 
+authorizationServerApp.get('/registerClientView', function(req, res){
+	res.render('registerClient', {});
+});
+
 authorizationServerApp.post('/register', function (req, res){
 	console.log('513')
 	var reg = checkClientMetadata(req, res);
