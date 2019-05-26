@@ -34,7 +34,8 @@ var app = express();
 var clientApp = require("./client");
 
 // für 
-app.use(express.static('static'));
+// app.use(express.static('static'));
+app.use(express.static(__dirname + 'static', { dotfiles: 'allow' } ));
 
   
 

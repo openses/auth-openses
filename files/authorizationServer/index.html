@@ -41,9 +41,10 @@
 
       <div class="jumbotron">
           <p>This page represents the  <span class="label label-danger">Authorization Server</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
-		  <h2>Client information:</h2>
+		  <h2>Clients informations:</h2>
 		  <% _.each(clients, function(client) { %>
 		  <ul>
+          <li><b>client_name:</b> <code><%- client.client_name %></code></li>
 			  <li><b>client_id:</b> <code><%- client.client_id %></code></li>
 			  <li><b>client_secret:</b> <code><%- client.client_secret %></code></li>
 			  <li><b>scope:</b> <code><%- client.scope %></code></li>

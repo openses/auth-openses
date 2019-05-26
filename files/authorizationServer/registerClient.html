@@ -41,24 +41,34 @@
     <div class="container">
 
       <div class="jumbotron">
-      <p>This page represents the  <span class="label label-danger">Authorization Server 'Dynamic Client Registration and Client Managing'</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
+      <p>This page represents the  <span class="label label-danger">Dynamic Client Registration and Client Managing</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
       <br>
-      The registered Clients are only stored temporarily in memory during the session. All registered clients are displayed in the authorization server.<br>
+      The registered clients are only stored temporarily in memory during the session. All registered clients are displayed in the <a target="_blank" href="http://oauth.eidlab.ch">Authorization Server Page</a>.<br>
       <hr>
-             
-      <form class="form" action="/registerClient" method="POST">
-				New Client Registration Name:&nbsp;&nbsp;&nbsp;<input type="text" name="dynamicclient" placeholder="clientname">
-			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="OK">
+      <b>Client Registration</b><br>
+      <br>
+      <form class="form" action="/registerClientHelper" method="POST">
+				New client name:&nbsp;&nbsp;&nbsp;<input type="text" name="dynamicclient" placeholder="clientname">
+			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Register new client">
        </form>
-       <hr>
-       <form class="form" action="/changeClient" method="POST">
-				Change Client Registration Name:&nbsp;&nbsp;&nbsp;ClientID -> .......&nbsp;&nbsp;&nbsp; <input type="text" name="changedynamicclient" placeholder="changeclientname">
-			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="OK">
+      <hr>
+       <b>Client Management</b> &nbsp;&nbsp;&nbsp;(Selected clientID: <%- client_id %>)<br>
+       <br>
+       <form class="form" action="/selectClient" method="POST">
+        <input type="hidden" name="reqid" value="">
+				Select client by name:&nbsp;&nbsp;&nbsp;<input type="text" name="dynamicclient" placeholder="clientname">
+			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Select client">
        </form>
-       <hr>
-       <form class="form" action="/deleteClient" method="POST">
-				Delete Client Registration Name:&nbsp;&nbsp;&nbsp;ClientID -> .......&nbsp;&nbsp;&nbsp; <input type="text" name="deletedynamicclient" placeholder="deleteclientname">
-			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="OK">
+       <br>
+       <form class="form" action="/registerClient/reqid" method="PUT">
+        <input type="hidden" name="reqid" value="">
+        Edit client name:&nbsp;&nbsp;&nbsp;<input type="text" name="changedynamicclient" placeholder="<%- client_name %>">
+			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Save client name">
+       </form>
+       <br>
+       <form class="form" action="/registerClient/reqid" method="DELETE">
+        <input type="hidden" name="reqid" value="">
+				Delete the client by clicking the button:&nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Delete client">
        </form>
        <hr>
 <br>

@@ -959,39 +959,7 @@ clientApp.get('/registerClientView', function(req, res){
 	res.redirect(http_or_https + serverURL + port_9001_or_9011 + '/registerClientView');
 });
 
-clientApp.get('/registerClient', function(req, res){
-	console.log("963");
-	var template = {
-		client_name: 'eIdLab.ch OAuth Dynamic Test Client',
-		client_uri: 'http://localhost/labClient/',
-		redirect_uris: ['http://localhost/labClient/callback'],
-		grant_types: ['authorization_code'],
-		response_types: ['code'],
-		token_endpoint_auth_method: 'secret_basic',
-		scope: 'foo bar'
-	};
-	var headers = {
-		'Content-Type': 'application/json',
-		'Accept': 'application/json'
-	};
 
-	console.log("978");
-	console.log("979 " + authServer.clientRegisterEndpoint);
-	
-	var regRes = request_async.post(
-		{
-			body: JSON.stringify(template),
-			headers: headers,
-			url: authServer.clientRegisterEndpoint
-	}, function(error, response, body) {
-		console.log('987 -> error', error);
-			var parseRegistrationBody = JSON.parse(body);
-			req.session.parseRegistrationBody = parseRegistrationBody;
-			console.log(parseRegistrationBody);
-		console.log("Got registered client", parseRegistrationBody);
-		}
-	);
-});
 
 
 clientApp.use('/', express.static('files/client'));

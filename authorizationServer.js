@@ -1,6 +1,9 @@
 var express = require("express");
+var session = require('express-session');
+var MongoDBStore = require('connect-mongodb-session')(session);
 var url = require("url");
 var bodyParser = require('body-parser');
+var request_async = require("request");
 var randomstring = require("randomstring");
 var cons = require('consolidate');
 var nosql = require('nosql').load('database.nosql');
@@ -11,6 +14,7 @@ __.string = require('underscore.string');
 var base64url = require('base64url');
 var jose = require('jsrsasign');
 var md5 = require('md5');
+
 
 // in oidcApp.js, authorizationServer.js, client.js, protectedResource.js vor dem Hochladen anpassen
 // in files/client/index.html Zeile 48 bis 60 facebook, google, oidc -> switch local/azure -> redirect
@@ -34,6 +38,26 @@ var port_9002_or_9012 = ':9012';
 
 var authorizationServerApp = express();
 
+
+const dbuser = process.env.DB_USER;
+const dbpassword = process.env.DB_PASSWORD;
+const db_host = process.env.DB_HOST;
+
+const dbURI = "mongodb://" + dbuser + ":" + dbpassword + db_host;
+
+var store = new MongoDBStore({
+	uri: dbURI,
+  collection: 'eidlabSessionsAuthServer'
+});
+
+// clientApp.use(session({secret: "xcerats24srw"}));
+authorizationServerApp.use(session({
+	secret: "xcerats24srw",
+	store: store,
+  resave: true,
+  saveUninitialized: true
+}));
+
 authorizationServerApp.use(bodyParser.json());
 authorizationServerApp.use(bodyParser.urlencoded({ extended: true })); // support form-encoded bodies (for the token endpoint)
 
@@ -47,12 +71,14 @@ var authServer = {
 	authorizationEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/authorize',
 	tokenEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/token',
 	approveEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/approve',
-	clientRegisterEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/register'
+	clientRegisterEndpoint: http_or_https + serverURL + port_9001_or_9011 +'/registerClient'
 };
+
 
 // client information
 var clients = [
-	{
+	{	
+		"client_name": "manual-registrated-default-oauth-client",
 		"client_id": "oauth-client-1",
 		"client_secret": "oauth-client-secret-1",
 		"redirect_uris": [http_or_https + serverURL + port_9000_or_9010 +"/callback_code"],
@@ -510,17 +536,68 @@ var checkClientMetadata = function(req, res) {
 };
 
 authorizationServerApp.get('/registerClientView', function(req, res){
-	res.render('registerClient', {});
+	// res.render('registerClient', {});
+	// req.session.new_registered_client_id = "-"; 
+	// req.session.new_registered_client_name = "-";
+	// res.render('registerClient', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name });
+	res.render('registerClient', {client_id: 'client_id', client_name: 'client_name' });
 });
 
-authorizationServerApp.post('/register', function (req, res){
-	console.log('513')
+authorizationServerApp.post('/registerClientHelper', function(req, res){
+	console.log("547");
+	console.log(req.body.dynamicclient);
+	// var parseReqBody = JSON.parse(req.body);
+	req.session.new_registered_client_name = req.body.dynamicclient;
+	var template = {
+		// client_name: 'eIdLab.ch OAuth Dynamic Test Client',
+		client_name: req.session.new_registered_client_name,
+		client_uri: 'http://localhost/labClient/',
+		redirect_uris: ['http://localhost/labClient/callback'],
+		grant_types: ['authorization_code'],
+		response_types: ['code'],
+		token_endpoint_auth_method: 'secret_basic',
+		scope: 'openid'
+	};
+	var headers = {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json'
+	};
+
+	console.log("568");
+	console.log("569 " + authServer.clientRegisterEndpoint);
+	
+	var regRes = request_async.post(
+		{
+			body: JSON.stringify(template),
+			headers: headers,
+			url: authServer.clientRegisterEndpoint
+	}, function(error, response, body) {
+		console.log('577 -> error', error);
+		console.log(body);
+			var parseRegistrationBody = JSON.parse(body);
+			// var parseRegistrationBody = body;
+			// req.session.parseRegistrationBody = parseRegistrationBody;
+			console.log(parseRegistrationBody);
+		console.log("Got registered client", parseRegistrationBody);
+		req.session.new_registered_client_id = JSON.stringify(parseRegistrationBody.client_id);
+		console.log('585');
+		console.log(req.session.new_registered_client_id);
+		res.render('registerClient', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name });
+		}
+	);
+});
+
+authorizationServerApp.post('/registerClient', function (req, res){
+	console.log('592')
 	var reg = checkClientMetadata(req, res);
 	if (!reg) {
 		return;
 	}
 	
 	reg.client_id = randomstring.generate();
+	req.session.new_registered_client_id = reg.client_id;
+	console.log('600');
+		console.log(req.session.new_registered_client_id);
 	if (__.contains(['client_secret_basic', 'client_secret_post']), reg.token_endpoint_auth_method) {
 		reg.client_secret = randomstring.generate();
 	}
@@ -529,11 +606,21 @@ authorizationServerApp.post('/register', function (req, res){
 	reg.client_secret_expires_at = 0;
 
 	reg.registration_access_token = randomstring.generate();
-	reg.registration_client_uri = 'http://localhost:9001/register/' + reg.client_id;
+	reg.registration_client_uri = 'http://localhost:9011/registerClient/' + reg.client_id;
 
 	clients.push(reg);
 	
 	res.status(201).json(reg);
+	console.log('614');
+	console.log(reg);
+	console.log('616');
+	console.log(clients);
+	console.log('618');
+	var i = 0;
+	var x="";
+	for (i in clients) {
+		x += console.log(clients[i].client_name);
+	  }
 	return;
 });
 
@@ -565,12 +652,12 @@ var authorizeConfigurationEndpointRequest = function (req, res, next) {
 
 };
 
-authorizationServerApp.get('/register/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
+authorizationServerApp.get('/registerClient/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
 	res.status(200).json(req.client);
 	return;
 });
 
-authorizationServerApp.put('/register/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
+authorizationServerApp.put('/registerClient/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
 
 	if (req.body.client_id != req.client.client_id) {
 		res.status(400).json({error: 'invalid_client_metadata'});
@@ -594,7 +681,7 @@ authorizationServerApp.put('/register/:clientId', authorizeConfigurationEndpoint
 	return;
 });
 
-authorizationServerApp.delete('/register/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
+authorizationServerApp.delete('/registerClient/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
 	clients = __.reject(clients, __.matches({client_id: req.client.client_id}));
 
 	nosql.remove(function(token) {
