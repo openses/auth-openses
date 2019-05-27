@@ -85,6 +85,7 @@ var clients = [
 		"scope": "openid profile email permission credentials "
 	}
 ];
+var dynClients = [];
 
 var rsaKey = {
   "alg": "RS256",
@@ -589,6 +590,7 @@ authorizationServerApp.post('/registerClientHelper', function(req, res){
 
 authorizationServerApp.post('/registerClient', function (req, res){
 	console.log('592')
+	var dynClient = {};
 	var reg = checkClientMetadata(req, res);
 	if (!reg) {
 		return;
@@ -609,18 +611,31 @@ authorizationServerApp.post('/registerClient', function (req, res){
 	reg.registration_client_uri = 'http://localhost:9011/registerClient/' + reg.client_id;
 
 	clients.push(reg);
+
 	
 	res.status(201).json(reg);
-	console.log('614');
+	console.log('617');
 	console.log(reg);
-	console.log('616');
+	console.log('619');
 	console.log(clients);
-	console.log('618');
-	var i = 0;
-	var x="";
-	for (i in clients) {
-		x += console.log(clients[i].client_name);
-	  }
+	console.log('621');
+	dynClient = '{"client_id":"' + reg.client_id + '", "client_name":"' + reg.client_name +'"}';
+
+	console.log(dynClient);
+	dynClients.push(JSON.parse(dynClient));
+	console.log('625');
+	console.log(dynClients);
+	console.log('637');
+	var j = 0;
+	var test;
+	for (j in dynClients) {
+		if (dynClients[j] && typeof(dynClients[j])== "object" ) {
+			// console.log(j + "/" + typeof(dynClients[j]));
+			// console.log(j + "/" + dynClients[j]);
+			console.log(j + "/" + dynClients[j].client_id);
+			console.log(j + "/" + dynClients[j].client_name);
+		}
+			}
 	return;
 });
 
