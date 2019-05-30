@@ -40,44 +40,50 @@
 <br><br>
     <div class="container">
 
-      <div class="jumbotron">
-      <p>This page represents the  <span class="label label-danger">Dynamic Client Registration and Client Managing</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
-      <br>
-      The registered clients are only stored temporarily in memory during the session. All registered clients are displayed in the <a target="_blank" href="http://oauth.eidlab.ch">Authorization Server Page</a>.<br>
-      <hr>
-      <b>Client Registration</b><br>
-      <br>
-      <form class="form" action="/registerClientHelper" method="POST">
-				New client name:&nbsp;&nbsp;&nbsp;<input type="text" name="dynamicclient" placeholder="clientname">
-			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Register new client">
-       </form>
-      <hr>
-       <b>Client Management</b> &nbsp;&nbsp;&nbsp;(Selected clientID: <%- client_id %>)<br>
-       <br>
-       <form class="form" action="/selectClient" method="POST">
-        <input type="hidden" name="reqid" value="">
-				Select client by name:&nbsp;&nbsp;&nbsp;<input type="text" name="dynamicclient" placeholder="clientname">
-			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Select client">
-       </form>
-       <br>
-       <form class="form" action="/registerClient/reqid" method="PUT">
-        <input type="hidden" name="reqid" value="">
-        Edit client name:&nbsp;&nbsp;&nbsp;<input type="text" name="changedynamicclient" placeholder="<%- client_name %>">
-			  &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Save client name">
-       </form>
-       <br>
-       <form class="form" action="/registerClient/reqid" method="DELETE">
-        <input type="hidden" name="reqid" value="">
-				Delete the client by clicking the button:&nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Delete client">
-       </form>
-       <hr>
-<br>
+        <div class="jumbotron">
+            <p>This page represents the  <span class="label label-danger">Dynamic Client Registration and Client Managing</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
+            <br>
+            The dynamic registered clients in this lab envorinment are only stored temporarily in memory during the session. The full metadata of all registered clients is displayed in the <a target="_blank" href="http://oauth.eidlab.ch">Authorization Server Page</a>.<br>
+            <hr>
+            <b>Dynamic Client Registration</b><br>
+            <br>
+            <form class="form" action="/registerClientHelper" method="POST">
+              New client name:&nbsp;&nbsp;&nbsp;<input type="text" name="dynamicclient" placeholder="clientname">
+              &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Register new client">
+             </form>
+             <form class="form" action="/adminDynClientsHelper" method="POST">
+             &nbsp;	&nbsp;	&nbsp;<input type="submit" class="btn btn-success" name="managedynclients" value="View and manage all dynamic clients">
+            </form>
+             <br>
 
 
-      &nbsp;&nbsp;
-      <br>
-          
-      </div>
+             <% if (oidcdynclientregisterflow.includes('c')) { %> 
+              <b>Dynamic Client Management</b> <br>
+             
+              
+                 <% _.each(dynClientsJS, function(client) { %>
+                  <hr>
+                  <form class="form" action="/registerClient/"+client.client_id method="PUT">
+                    <b>dynamic_client_id:</b> <code><%- client.client_id %></code><br>
+                    <b>dynamic_client_name:</b> <input type="text" name="dynamicclient" placeholder="clientname" value=<%- client.client_name %>><br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="change_name_"+client.client_id value="Change client name">
+                  </form>
+                  <br>
+                  <form class="form" action="" method="POST">
+                  <input type="text" name="client_id" value=<%- client.client_id %>>
+                    &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="delete_"+client.client_id value="Delete client"><br>
+                  </form>
+                 <% }); %>
+          <% } else { %>
+          ""
+        <% } %>
+             
+             
+            
+            </div>
+
+      
     </div><!-- /.container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

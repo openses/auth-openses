@@ -85,7 +85,8 @@ var clients = [
 		"scope": "openid profile email permission credentials "
 	}
 ];
-var dynClients = [];
+var dynClientsJS = [];
+
 
 var rsaKey = {
   "alg": "RS256",
@@ -536,15 +537,18 @@ var checkClientMetadata = function(req, res) {
 	return reg;
 };
 
-authorizationServerApp.get('/registerClientView', function(req, res){
+authorizationServerApp.get('/adminDynClientsView', function(req, res){
 	// res.render('registerClient', {});
 	// req.session.new_registered_client_id = "-"; 
 	// req.session.new_registered_client_name = "-";
 	// res.render('registerClient', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name });
-	res.render('registerClient', {client_id: 'client_id', client_name: 'client_name' });
+	req.session.oidcdynclientregisterflow = 'a';
+	res.render('adminDynClientsView', {client_id: 'client_id', client_name: 'client_name', dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow });
+	// res.render('/adminDynClientsView', {});
 });
 
 authorizationServerApp.post('/registerClientHelper', function(req, res){
+	req.session.oidcdynclientregisterflow = req.session.oidcdynclientregisterflow + 'b';
 	console.log("547");
 	console.log(req.body.dynamicclient);
 	// var parseReqBody = JSON.parse(req.body);
@@ -583,14 +587,43 @@ authorizationServerApp.post('/registerClientHelper', function(req, res){
 		req.session.new_registered_client_id = JSON.stringify(parseRegistrationBody.client_id);
 		console.log('585');
 		console.log(req.session.new_registered_client_id);
-		res.render('registerClient', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name });
+		console.log('587');
+		req.session.dynClientsJS = dynClientsJS; 
+		console.log(req.session.dynClientsJS);
+		res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow  });
 		}
 	);
 });
 
+authorizationServerApp.post('/adminDynClientsHelper', function(req, res){
+	req.session.oidcdynclientregisterflow = req.session.oidcdynclientregisterflow + 'c';
+	console.log("600");
+	console.log(req.session.oidcdynclientregisterflow);
+	var j = 0;
+	var test;
+	for (j in dynClientsJS) {
+		if (dynClientsJS[j] && typeof(dynClientsJS[j])== "object" ) {
+			// console.log(j + "/" + typeof(dynClients[j]));
+			// console.log(j + "/" + dynClients[j]);
+			console.log(j + "/" + dynClientsJS[j].client_id);
+			console.log(j + "/" + dynClientsJS[j].client_name);
+		}
+			}
+	if (typeof(dynClientsJS[0])== "object") 
+			{
+				req.session.dynClientsJS = dynClientsJS;
+			} else 
+			{
+				req.session.dynClientsJS = 'error_645';	
+			}
+	console.log('619');
+	res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow });
+
+});
+
 authorizationServerApp.post('/registerClient', function (req, res){
 	console.log('592')
-	var dynClient = {};
+	var dynClientJSON = {};
 	var reg = checkClientMetadata(req, res);
 	if (!reg) {
 		return;
@@ -619,23 +652,41 @@ authorizationServerApp.post('/registerClient', function (req, res){
 	console.log('619');
 	console.log(clients);
 	console.log('621');
-	dynClient = '{"client_id":"' + reg.client_id + '", "client_name":"' + reg.client_name +'"}';
-
-	console.log(dynClient);
-	dynClients.push(JSON.parse(dynClient));
+	dynClientJSON = '{"client_id":"' + reg.client_id + '", "client_name":"' + reg.client_name +'"}';
+	console.log(dynClientJSON);
+	var dynClientJS = JSON.parse(dynClientJSON);
+	console.log(dynClientJS);
+	dynClientsJS.push(dynClientJS);
 	console.log('625');
-	console.log(dynClients);
+	console.log(dynClientsJS);
 	console.log('637');
 	var j = 0;
 	var test;
-	for (j in dynClients) {
-		if (dynClients[j] && typeof(dynClients[j])== "object" ) {
+	for (j in dynClientsJS) {
+		if (dynClientsJS[j] && typeof(dynClientsJS[j])== "object" ) {
 			// console.log(j + "/" + typeof(dynClients[j]));
 			// console.log(j + "/" + dynClients[j]);
-			console.log(j + "/" + dynClients[j].client_id);
-			console.log(j + "/" + dynClients[j].client_name);
+			console.log(j + "/" + dynClientsJS[j].client_id);
+			console.log(j + "/" + dynClientsJS[j].client_name);
 		}
 			}
+	if (typeof(dynClientsJS[0])== "object") 
+			{
+				req.session.dynClientsJS = dynClientsJS;
+			} else 
+			{
+				req.session.dynClientsJS = 'error_645';	
+			}
+	console.log('647');
+	console.log(req.session.dynClientsJS);
+	/* console.log('640');
+	var dynClienstJSON = JSON.stringify(dynClientsJS);
+	console.log(dynClienstJSON);
+	for (var z = 0; z < dynClienstJSON.length; z++) {
+		console.log(dynClienstJSON[z]); 
+		console.log(dynClienstJSON[z].client_id);
+		console.log(dynClienstJSON[z].client_name);   
+	} */
 	return;
 });
 
@@ -672,6 +723,41 @@ authorizationServerApp.get('/registerClient/:clientId', authorizeConfigurationEn
 	return;
 });
 
+
+authorizationServerApp.post('/update_client', function(req, res) {
+
+	var headers = {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json',
+		'Authorization': 'Bearer ' + client.registration_access_token
+	};
+	
+	var reg = __.clone(client);
+	delete reg['client_id_issued_at'];
+	delete reg['client_secret_expires_at'];
+	delete reg['registration_client_uri'];
+	delete reg['registration_access_token'];
+	
+	reg.client_name = req.body.client_name;
+	
+	console.log("Sending updated client: ", reg);
+	
+	var regRes = request('PUT', client.registration_client_uri, {
+		body: JSON.stringify(reg),
+		headers: headers
+	});
+	
+	if (regRes.statusCode == 200) {
+		client = JSON.parse(regRes.getBody());
+		res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope, client: client});
+		return;
+	} else {
+		res.render('error', {error: 'Unable to update client ' + regRes.statusCode});
+		return;
+	}
+	
+});
+
 authorizationServerApp.put('/registerClient/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
 
 	if (req.body.client_id != req.client.client_id) {
@@ -698,6 +784,7 @@ authorizationServerApp.put('/registerClient/:clientId', authorizeConfigurationEn
 
 authorizationServerApp.delete('/registerClient/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
 	clients = __.reject(clients, __.matches({client_id: req.client.client_id}));
+	dynClientsJS = __.reject(dynClientJS, __.matches({client_id: req.client.client_id}));
 
 	nosql.remove(function(token) {
 		if (token.client_id == req.client.client_id) {
@@ -706,10 +793,16 @@ authorizationServerApp.delete('/registerClient/:clientId', authorizeConfiguratio
 	}, function(err, count) {
 		console.log("Removed %s clients", count);
 	});
-	
+	console.log("732");
 	res.status(204).end();
-	return;
+
+	req.session.dynClientsJS = dynClientsJS; 
+	console.log(req.session.dynClientsJS);
+	res.render('registerClient', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients });
+
+	// return;
 });
+
 
 var buildUrl = function(base, options, hash) {
 	var newUrl = url.parse(base, true);

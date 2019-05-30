@@ -955,12 +955,9 @@ clientApp.get("/sign_out_destroy_session_2", function(req, res){
 		return;
 });
 
-clientApp.get('/registerClientView', function(req, res){
-	res.redirect(http_or_https + serverURL + port_9001_or_9011 + '/registerClientView');
+clientApp.get('/adminDynClientsView', function(req, res){
+	res.redirect(http_or_https + serverURL + port_9001_or_9011 + '/adminDynClientsView');
 });
-
-
-
 
 clientApp.use('/', express.static('files/client'));
 
