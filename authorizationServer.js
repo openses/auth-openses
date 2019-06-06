@@ -590,7 +590,7 @@ authorizationServerApp.post('/registerClientHelper', function(req, res){
 		console.log('587');
 		req.session.dynClientsJS = dynClientsJS; 
 		console.log(req.session.dynClientsJS);
-		res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow  });
+		res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow, dynClientsJStypeOfCeck: req.session.dynClientsJStypeOfCeck   });
 		}
 	);
 });
@@ -612,12 +612,14 @@ authorizationServerApp.post('/adminDynClientsHelper', function(req, res){
 	if (typeof(dynClientsJS[0])== "object") 
 			{
 				req.session.dynClientsJS = dynClientsJS;
+				req.session.dynClientsJStypeOfCeck = true;
 			} else 
 			{
 				req.session.dynClientsJS = 'error_645';	
+				req.session.dynClientsJStypeOfCeck = false;
 			}
 	console.log('619');
-	res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow });
+	res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow, dynClientsJStypeOfCeck: req.session.dynClientsJStypeOfCeck });
 
 });
 
@@ -647,19 +649,21 @@ authorizationServerApp.post('/registerClient', function (req, res){
 
 	
 	res.status(201).json(reg);
-	console.log('617');
+	console.log('650');
 	console.log(reg);
-	console.log('619');
+	console.log('652');
 	console.log(clients);
-	console.log('621');
-	dynClientJSON = '{"client_id":"' + reg.client_id + '", "client_name":"' + reg.client_name +'"}';
+	console.log('654');
+	// dynClientJSON = '{"client_id":"' + reg.client_id + '", "client_name":"' + reg.client_name +'"}';
+	dynClientJSON = '{"client_id":"' + reg.client_id + '", "client_registration_access_token":"' + reg.registration_access_token + '", "client_name":"' + reg.client_name +'"}';
+
 	console.log(dynClientJSON);
 	var dynClientJS = JSON.parse(dynClientJSON);
 	console.log(dynClientJS);
 	dynClientsJS.push(dynClientJS);
-	console.log('625');
+	console.log('662');
 	console.log(dynClientsJS);
-	console.log('637');
+	console.log('664');
 	var j = 0;
 	var test;
 	for (j in dynClientsJS) {
@@ -667,6 +671,7 @@ authorizationServerApp.post('/registerClient', function (req, res){
 			// console.log(j + "/" + typeof(dynClients[j]));
 			// console.log(j + "/" + dynClients[j]);
 			console.log(j + "/" + dynClientsJS[j].client_id);
+			console.log(j + "/" + dynClientsJS[j].client_registration_access_token);
 			console.log(j + "/" + dynClientsJS[j].client_name);
 		}
 			}
@@ -675,9 +680,9 @@ authorizationServerApp.post('/registerClient', function (req, res){
 				req.session.dynClientsJS = dynClientsJS;
 			} else 
 			{
-				req.session.dynClientsJS = 'error_645';	
+				req.session.dynClientsJS = 'error_681';	
 			}
-	console.log('647');
+	console.log('683');
 	console.log(req.session.dynClientsJS);
 	/* console.log('640');
 	var dynClienstJSON = JSON.stringify(dynClientsJS);
@@ -724,7 +729,7 @@ authorizationServerApp.get('/registerClient/:clientId', authorizeConfigurationEn
 });
 
 
-authorizationServerApp.post('/update_client', function(req, res) {
+/* authorizationServerApp.post('/update_client', function(req, res) {
 
 	var headers = {
 		'Content-Type': 'application/json',
@@ -756,21 +761,28 @@ authorizationServerApp.post('/update_client', function(req, res) {
 		return;
 	}
 	
-});
+}); */
+
+
 
 authorizationServerApp.put('/registerClient/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
-
+	console.log('769');
+	console.log('770 -> req.body.client_id: ' + req.body.client_id);
+	console.log('771 -> req.client.client_id: ' + req.client.client_id);
 	if (req.body.client_id != req.client.client_id) {
 		res.status(400).json({error: 'invalid_client_metadata'});
+		console.log('772');
 		return;
 	}
 	
 	if (req.body.client_secret && req.body.client_secret != req.client.client_secret) {
+		console.log('777 -> error');
 		res.status(400).json({error: 'invalid_client_metadata'});
 	}
 
 	var reg = checkClientMetadata(req, res);
 	if (!reg) {
+		console.log('783');
 		return;
 	}
 
@@ -779,13 +791,53 @@ authorizationServerApp.put('/registerClient/:clientId', authorizeConfigurationEn
 	});
 
 	res.status(200).json(req.client);
+	console.log('792 -> error', req.client);
 	return;
 });
 
-authorizationServerApp.delete('/registerClient/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
-	clients = __.reject(clients, __.matches({client_id: req.client.client_id}));
-	dynClientsJS = __.reject(dynClientJS, __.matches({client_id: req.client.client_id}));
+authorizationServerApp.post('/update_client', function(req, res) {
+	console.log("795");
+	console.log(req.body.client_id);
+	console.log(req.body.client_registration_access_token);
+	var headers = {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json',
+		'Authorization': 'Bearer ' + req.body.client_registration_access_token
+	};
+	
+	// var reg = __.clone(client);
+	var reg = __.clone(clients, __.matches({client_id: req.client.client_id}));
+	delete reg['client_id_issued_at'];
+	delete reg['client_secret_expires_at'];
+	delete reg['registration_client_uri'];
+	delete reg['registration_access_token'];
+	
+	reg.client_name = req.body.client_name;
+	
+	console.log("782 Sending updated client: ", reg);
+	
+	
+	var regRes = request_async.put({
+		body: JSON.stringify(reg),
+		headers: headers,
+		url: 'http://localhost:9011/registerClient/' + req.body.client_id
+		}, function(error, response, body) {
+			console.log('819 -> url: ', 'http://localhost:9011/registerClient/' + req.body.client_id);
+			console.log('820 -> error', error);
+	
+			req.session.oidcdynclientregisterflow = 'b';
+			res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow, dynClientsJStypeOfCeck: req.session.dynClientsJStypeOfCeck  });
+		});
+});
 
+authorizationServerApp.delete('/registerClient/:clientId', authorizeConfigurationEndpointRequest, function(req, res) {
+	console.log("789");
+	clients = __.reject(clients, __.matches({client_id: req.client.client_id}));
+	console.log("791");
+	// var dynClientsJS = req.session.dynClientsJS;
+	console.log("793");
+	dynClientsJS = __.reject(dynClientsJS, __.matches({client_id: req.client.client_id}));
+	console.log("795");
 	nosql.remove(function(token) {
 		if (token.client_id == req.client.client_id) {
 			return true;	
@@ -793,15 +845,77 @@ authorizationServerApp.delete('/registerClient/:clientId', authorizeConfiguratio
 	}, function(err, count) {
 		console.log("Removed %s clients", count);
 	});
-	console.log("732");
+	
 	res.status(204).end();
-
+	console.log("805")
 	req.session.dynClientsJS = dynClientsJS; 
 	console.log(req.session.dynClientsJS);
-	res.render('registerClient', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients });
+	// res.render('registerClient', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients });
+	// res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow });
 
-	// return;
+	return;
 });
+
+authorizationServerApp.post('/unregisterClient', function(req, res) {
+	console.log('811');
+	console.log(req.body.client_id);
+	console.log(req.body.client_registration_access_token);
+	var headers = {
+		'Authorization': 'Bearer ' + req.body.client_registration_access_token
+	};
+
+	/* var regRes = request_async('DELETE', '/registerClient/' + req.body.client_id, {
+		headers: headers
+	}); */
+
+	var regRes = request_async.delete({
+		headers: headers,
+		url: 'http://localhost:9011/registerClient/' + req.body.client_id
+		}, function(error, response, body) {
+			console.log('826 -> error', error);
+			/* client = {};
+			if (regRes.statusCode == 204) {
+				// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope, client: client});
+				res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow });
+				return;
+			} else {
+				res.render('error', {error: 'Unable to delete client ' + regRes.statusCode});
+				return;
+			} */
+			req.session.oidcdynclientregisterflow = 'b';
+			res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow, dynClientsJStypeOfCeck: req.session.dynClientsJStypeOfCeck  });
+
+			/* console.log(body);
+				var parseRegistrationBody = JSON.parse(body);
+				// var parseRegistrationBody = body;
+				// req.session.parseRegistrationBody = parseRegistrationBody;
+				console.log(parseRegistrationBody);
+			console.log("Got registered client", parseRegistrationBody);
+			req.session.new_registered_client_id = JSON.stringify(parseRegistrationBody.client_id);
+			console.log('585');
+			console.log(req.session.new_registered_client_id);
+			console.log('587');
+			req.session.dynClientsJS = dynClientsJS; 
+			console.log(req.session.dynClientsJS);
+			res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow  }); */
+			}
+
+	);
+
+	
+
+	/* if (regRes.statusCode == 204) {
+		// res.render('index', {access_token: access_token, refresh_token: refresh_token, scope: scope, client: client});
+		res.render('adminDynClientsView', {client_id: req.session.new_registered_client_id, client_name: req.session.new_registered_client_name, dynClientsJS: req.session.dynClientsJS, clients: clients, oidcdynclientregisterflow: req.session.oidcdynclientregisterflow });
+		return;
+	} else {
+		res.render('error', {error: 'Unable to delete client ' + regRes.statusCode});
+		return;
+	} */
+
+
+	
+});	
 
 
 var buildUrl = function(base, options, hash) {

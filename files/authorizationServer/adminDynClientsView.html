@@ -41,6 +41,7 @@
     <div class="container">
 
         <div class="jumbotron">
+            under development - under development - under development - under development - under development<br><br>
             <p>This page represents the  <span class="label label-danger">Dynamic Client Registration and Client Managing</span> of the <a target="_blank"  href="http://eidlab.ch"><span class="label label-default">eIdLab.ch</span></a> OAuth and OpenID Connect ecosystem:</p>
             <br>
             The dynamic registered clients in this lab envorinment are only stored temporarily in memory during the session. The full metadata of all registered clients is displayed in the <a target="_blank" href="http://oauth.eidlab.ch">Authorization Server Page</a>.<br>
@@ -49,41 +50,42 @@
             <br>
             <form class="form" action="/registerClientHelper" method="POST">
               New client name:&nbsp;&nbsp;&nbsp;<input type="text" name="dynamicclient" placeholder="clientname">
-              &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="register" value="Register new client">
+              &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-default" name="register" value="Register new client">
              </form>
+             <hr>
+            <b>Dynamic Client Management</b><br>
+            <br>
              <form class="form" action="/adminDynClientsHelper" method="POST">
-             &nbsp;	&nbsp;	&nbsp;<input type="submit" class="btn btn-success" name="managedynclients" value="View and manage all dynamic clients">
+             <input type="submit" class="btn btn-default" name="managedynclients" value="View and manage all dynamic clients">
             </form>
-             <br>
-
-
-             <% if (oidcdynclientregisterflow.includes('c')) { %> 
-              <b>Dynamic Client Management</b> <br>
-             
-              
+             <% if (oidcdynclientregisterflow.includes('c'  ) && dynClientsJStypeOfCeck == true ) { %> 
                  <% _.each(dynClientsJS, function(client) { %>
+
+                  <% if (client.client_name !== null ) { %>
+
                   <hr>
-                  <form class="form" action="/registerClient/"+client.client_id method="PUT">
+                  <form class="form" action="/update_client/" method="POST">
                     <b>dynamic_client_id:</b> <code><%- client.client_id %></code><br>
-                    <b>dynamic_client_name:</b> <input type="text" name="dynamicclient" placeholder="clientname" value=<%- client.client_name %>><br>
+                    <input type="hidden" name="client_id" value="<%- client.client_id %>">
+                    <input type="hidden" name="client_registration_access_token" value="<%- client.client_registration_access_token %>">
+                    <b>dynamic_client_registration_access_token:</b> <code><%- client.client_registration_access_token %></code><br>
+                    <b>dynamic_client_name:</b> <input type="text" name="client_name" placeholder="clientname" value=<%- client.client_name %>><br>
                     <br>
-                    &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="change_name_"+client.client_id value="Change client name">
+                    <input type="submit" class="btn btn-default" name="change_name_"+client.client_id value="Change client name">
                   </form>
                   <br>
-                  <form class="form" action="" method="POST">
-                  <input type="text" name="client_id" value=<%- client.client_id %>>
-                    &nbsp;&nbsp;&nbsp;<input type="submit" class="btn btn-success" name="delete_"+client.client_id value="Delete client"><br>
+                  <form class="form" action="/unregisterClient/" method="POST">
+                    <input type="hidden" name="client_id" value="<%- client.client_id %>">
+                    <input type="hidden" name="client_registration_access_token" value="<%- client.client_registration_access_token %>">
+                   <input type="submit" class="btn btn-default" name="delete_"+client.client_id value="Unregister client"><br>
                   </form>
+
+                  <% }; %>
+
                  <% }); %>
           <% } else { %>
-          ""
         <% } %>
-             
-             
-            
             </div>
-
-      
     </div><!-- /.container -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
