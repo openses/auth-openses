@@ -142,14 +142,14 @@ clientApp.get('/labClient', function (req, res, next) {
 });
 
 clientApp.get('/authorize', function(req, res){
-
+console.log('145')
 	// req.session.oidcflow= 'start';
 
 	if (!req.session.oidcflow ) {
 		req.session.oidcflow = 'z';
 	};
 	req.session.oidcflow = req.session.oidcflow.concat('a');
-
+	console.log('152 -> req.session.oidcflow: ' + req.session.oidcflow)
 	var access_token = null;
 	req.session.access_token = access_token;
 	var refresh_token = null;
@@ -311,10 +311,10 @@ clientApp.get("/callback", function(req, res){
 });
 
 clientApp.get("/callback_code", function(req, res){
-
+console.log('314');
 	// req.session.oidcflow = 'code';
 	if (!req.session.oidcflow) {
-		req.session.oidcflow = 'z';
+		req.session.oidcflow = 'za';
 	};
 	if (req.session.oidcflow.includes('a')) {
 	req.session.oidcflow = req.session.oidcflow.concat('b');
@@ -342,6 +342,9 @@ clientApp.get("/callback_code", function(req, res){
 
 	var code = req.query.code;
 	req.session.render_code = code;
+	console.log('345 -> req.session.render_code: ' + req.session.render_code);
+	console.log('346 -> oidcflow: req.session.oidcflow: ' + req.session.oidcflow);
+	oidcflow: req.session.oidcflow
 	res.render('index', {render_code: req.session.render_code, access_token: req.session.access_token, refresh_token: req.session.refresh_token, scope: req.session.scope, id_token: req.session.body_id_token, sub: req.session.sub, iss: req.session.iss, userInfo: req.session.userInfo, resource_with_access_token: req.session.protectedResourceVar_with_access_token, resource: req.session.protectedResourceVar, profile: req.session.profile, permission: req.session.permission, credentials: req.session.credentials, oidcflow: req.session.oidcflow});
 	return;
 });
