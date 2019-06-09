@@ -2,3 +2,4 @@
 node_modules/
 bin/privkey.pem
 bin/fullchain.pem
+.well-known/acme-challenge
