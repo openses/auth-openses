@@ -12,6 +12,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var serveIndex = require('serve-index');
 // [SH] Require Passport
 var passport = require('passport');
 // https://www.npmjs.com/package/dotenv -> see ./api/models/db.js -> dbURI
@@ -36,6 +37,7 @@ var clientApp = require("./client");
 // für 
 // app.use(express.static('static'));
 app.use(express.static(__dirname + 'static', { dotfiles: 'allow' } ));
+app.use('/.well-known', express.static('.well-known'), serveIndex('.well-known'));
 
   
 
