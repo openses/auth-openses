@@ -28,7 +28,7 @@
     "googleapis": "^38.0.0",
     "http-errors": "~1.6.2",
     "jsonwebtoken": "^8.3.0",
-    "jsrsasign": "^5.0.0",
+    "jsrsasign": "^10.5.25",
     "jwt-decode": "^2.2.0",
     "md5": "^2.2.1",
     "mongoose": "^5.3.4",
