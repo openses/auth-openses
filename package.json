@@ -38,7 +38,7 @@
     "oidc-provider": "^5.5.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "pm2": "^3.3.1",
+    "pm2": "^5.2.0",
     "pug": "^2.0.3",
     "qs": "^4.0.0",
     "randomstring": "^1.0.7",
