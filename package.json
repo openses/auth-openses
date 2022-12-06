@@ -40,7 +40,7 @@
     "passport-local": "^1.0.0",
     "pm2": "^3.3.1",
     "pug": "^2.0.3",
-    "qs": "^4.0.0",
+    "qs": "^6.2.4",
     "randomstring": "^1.0.7",
     "request": "^2.58.0",
     "serve-favicon": "^2.5.0",
